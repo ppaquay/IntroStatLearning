@@ -3,7 +3,7 @@ Solutions of the exercises from Chapter 2
 
 ## Conceptual
 
-Q1. For each of parts (a) through (d), indicate whether i. or ii. is correct, and explain your answer. In general, do we expect the performance of a flexible statistical learning method to perform better or worse than an inflexible method when :
+**Q1.** For each of parts (a) through (d), indicate whether i. or ii. is correct, and explain your answer. In general, do we expect the performance of a flexible statistical learning method to perform better or worse than an inflexible method when :
 (a) The sample size $n$ is extremely large, and the number of predictors $p$ is small ?
 
 *Inflexible*
@@ -20,7 +20,7 @@ Q1. For each of parts (a) through (d), indicate whether i. or ii. is correct, an
 
 *Flexible*
 
-Q2. Explain whether each scenario is a classification or regression problem, and indicate whether we are most interested in inference or prediction. Finally, provide $n$ and $p$.
+**Q2.** Explain whether each scenario is a classification or regression problem, and indicate whether we are most interested in inference or prediction. Finally, provide $n$ and $p$.
 
 (a) We collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in understanding which factors affect CEO salary.
 
@@ -34,7 +34,7 @@ Q2. Explain whether each scenario is a classification or regression problem, and
 
 *Regression with $n = 52$ and $p = 3$*
 
-Q3. We now revisit the bias-variance decomposition.
+**Q3.** We now revisit the bias-variance decomposition.
 
 (a) Provide a sketch of typical (squared) bias, variance, training error, test error, and Bayes (or irreducible) error curves, on a single plot, as we go from less flexible statistical learning methods towards more flexible approaches. The x-axis should represent the amount of flexibility in the method, and the y-axis should represent the values for each curve. There should be five curves. Make sure to label each one.
 
@@ -44,7 +44,7 @@ Q3. We now revisit the bias-variance decomposition.
 
 *The training MSE declines monotonically as flexibility increases, this is because as flexibility increases the $f$ curve fits the observed data more closely. The test MSE intially declines as flexibility increases but at some point it levels off and then starts to increase again (U-shape), this is because when a $f$ curve yields a small training MSE but a large test MSE we are actually overfitting the data (our procedure tries too hard to find patterns in the training data that are maybe only caused by chance rather than by true properties of the unknown $f$). The squared bias decreases monotonically and the variance increases monotonically; as a general rule, as we use more flexible methods, the variance will increase and the bias will decrease. Variance refers to the amount by wich $\hat{f}$ would change if we estimated it using a different training data set, so if the curve fits the observations very closely, changing any point may cause $\hat{f}$ to change considerably, and so will result in some variance. Bias refers to the error that is introduced by approximating a real-life problem by a much simpler model, so if we use a very simple model (linear regression) it is unlikely that any real-life problem has such a simple linear relationship, and so performing linear regression will result in some bias in the estimate of $f$. The irreducible error is a constant so it is a parallel line, this curve lies below the test MSE curve because the expected test MSE will always be greater the $Var(\varepsilon)$ (see relation $(2.7)$).*
 
-Q4. You will now think of some real-life applications for statistical learning.
+**Q4.** You will now think of some real-life applications for statistical learning.
 
 (a) Describe three real-life applications in which classification might be useful. Describe the response, as well as the predictors. Is the goal of each application inference or prediction ? Explain your answer.
 
@@ -61,7 +61,7 @@ Goal: Prediction). Cluster 2 – Division of average working population into inc
 Predictors : Violent content, Sexual language, theme, etc., 
 Goal : Prediction).*
 
-Q5. What are the advantages and disadvantages of a very flexible (versus a less flexible) approach for regression or classification ? Under what circumstances might a more flexible approach be preferred to a less flexible approach? When might a less flexible approach be preferred ?
+**Q5.** What are the advantages and disadvantages of a very flexible (versus a less flexible) approach for regression or classification ? Under what circumstances might a more flexible approach be preferred to a less flexible approach? When might a less flexible approach be preferred ?
 
 \textit{
 \begin{center}
@@ -78,7 +78,7 @@ Q5. What are the advantages and disadvantages of a very flexible (versus a less 
 \end{center}
 }
 
-Q6. Describe the differences between a parametric and a non-parametric statistical learning approach. What are the advantages of a parametric approach to regression or classification (as opposed to a nonparametric approach) ? What are its disadvantages ?
+**Q6.** Describe the differences between a parametric and a non-parametric statistical learning approach. What are the advantages of a parametric approach to regression or classification (as opposed to a nonparametric approach) ? What are its disadvantages ?
 
 \textit{
 \begin{center}
@@ -95,7 +95,7 @@ Q6. Describe the differences between a parametric and a non-parametric statistic
 \end{center}
 }
 
-Q7. The table below provides a training data set containing 6 observations, 3 predictors, and 1 qualitative response variable. Suppose we wish to use this data set to make a prediction for Y when X1 = X2 = X3 = 0 using K-nearest neighbors.
+**Q7.** The table below provides a training data set containing 6 observations, 3 predictors, and 1 qualitative response variable. Suppose we wish to use this data set to make a prediction for Y when X1 = X2 = X3 = 0 using K-nearest neighbors.
 (a) Compute the Euclidean distance between each observation and
 the test point, X1 = X2 = X3 = 0.
 
@@ -136,7 +136,7 @@ Our prediction is then Red.*
 
 ## Applied
 
-Q8. This exercise relates to the "College" data set, which can be found in the file "College.csv". It contains a number of variables for 777 different universities and colleges in the US.
+**Q8.** This exercise relates to the "College" data set, which can be found in the file "College.csv". It contains a number of variables for 777 different universities and colleges in the US.
 
 (a) Use the read.csv() function to read the data into R. Call the loaded data "college". Make sure that you have the directory set to the correct location for the data.
 
@@ -311,7 +311,7 @@ rownames[as.numeric(rownames(weird.phd))]
 ## 777 Levels: Abilene Christian University ... York College of Pennsylvania
 ```
 
-Q9. This exercise involves the "Auto" data set studied in the lab. Make sure the missing values have been removed from the data.
+**Q9.** This exercise involves the "Auto" data set studied in the lab. Make sure the missing values have been removed from the data.
 
 (a) Which of the predictors are quantitative, and which are qualitative ?
 
@@ -468,13 +468,25 @@ cor(auto$displacement, auto$horsepower)
 ## [1] 0.8973
 ```
 
-Q10. This exercise involves the "Boston" housing data set.
+**Q10.** This exercise involves the "Boston" housing data set.
 
 (a) To begin, load in the "Boston" data set.
 
 
 ```r
 library(MASS)
+```
+
+```
+## 
+## Attaching package: 'MASS'
+## 
+## The following object is masked _by_ '.GlobalEnv':
+## 
+##     Boston
+```
+
+```r
 Boston$chas <- as.factor(Boston$chas)
 nrow(Boston)
 ```
