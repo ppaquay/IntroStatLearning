@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 Solutions of the exercises from Chapter 3
 ============================================
 
@@ -11,7 +14,7 @@ Solutions of the exercises from Chapter 3
 
 *The KNN classifier is typically used to solve classification problems (those with a qualitative response) by identifying the neighborhood of $x_0$ and then estimating the conditional probability $P(Y = j | X = x_0)$ for class $j$ as the fraction of points in the neighborhood whose response values equal $j$. The KNN regression method is used to solve regression problems (those with a quantitative response) by again identifying the neighborhood of $x_0$ and then estimating $f(x_0)$ as the average of all the training responses in the neighborhood.*
 
-**Q3.** Suppose we have a data set with five predictors, $X1 = \mathrm{GPA}$, $X2 = \mathrm{IQ}$, $X3 = \mathrm{Gender}$ (1 for Female and 0 for Male), $X4 = \mathrm{Interaction\ between\ GPA\ and\ IQ}$, and $X5 = \mathrm{Interaction\ between\ GPA\ and\ Gender}$. The response is starting salary after graduation (in thousands of dollars). Suppose we use least squares to fit the model, and get $\hat{\beta_0} = 50$, $\hat{\beta_1} = 20$, $\hat{\beta_2} = 0.07$, $\hat{\beta_3} = 35$, $\hat{\beta_4} = 0.01$, $\hat{\beta_5} = −10$.
+**Q3.** Suppose we have a data set with five predictors, $X1 = \mathrm{GPA}$, $X2 = \mathrm{IQ}$, $X3 = \mathrm{Gender}$ (1 for Female and 0 for Male), $X4 = \mathrm{Interaction\ between\ GPA\ and\ IQ}$, and $X5 = \mathrm{Interaction\ between\ GPA\ and\ Gender}$. The response is starting salary after graduation (in thousands of dollars). Suppose we use least squares to fit the model, and get $\hat{\beta_0} = 50$, $\hat{\beta_1} = 20$, $\hat{\beta_2} = 0.07$, $\hat{\beta_3} = 35$, $\hat{\beta_4} = 0.01$, $\hat{\beta_5} = -10$.
 
 (a) Which answer is correct, and why?
 
@@ -79,3 +82,225 @@ with $\hat{y}_i = \hat{\beta}_1x_i$ we may write
 \[R^2 = 1 - \frac{\sum_i(y_i - \sum_jx_jy_j/\sum_jx_j^2 x_i)^2}{\sum_jy_j^2} = \frac{\sum_jy_j^2 - (\sum_iy_i^2 - 2\sum_iy_i(\sum_jx_jy_j/\sum_jx_j^2)x_i + \sum_i(\sum_jx_jy_j/\sum_jx_j^2)^2x_i^2)}{\sum_jy_j^2}\]
 and finally
 \[R^2 = \frac{2(\sum_ix_iy_i)^2/\sum_jx_j^2 - (\sum_ix_iy_i)^2/\sum_jx_j^2}{\sum_jy_j^2} = \frac{(\sum_ix_iy_i)^2}{\sum_jx_j^2\sum_jy_j^2} = Cor(X, Y)^2.\]*
+
+## Applied
+
+**Q8.** This question involves the use of simple linear regression on the "Auto" data set.
+
+(a) Use the lm() function to perform a simple linear regression with "mpg" as the response and "horsepower" as the predictor. Use the summary() function to print the results. Comment on the output. For example :
+
+i. Is there a relationship between the predictor and the response ?
+
+```{r}
+library(ISLR)
+data(Auto)
+fit <- lm(mpg ~ horsepower, data = Auto)
+summary(fit)
+```
+
+*We can answer this question by testing the hypothesis $H_0 : \beta_i = 0 \forall i$. The p-value corresponding to the F-statistic is `r as.numeric(pf(summary(fit)$fstatistic[1], summary(fit)$fstatistic[2], summary(fit)$fstatistic[3], lower.tail = F))`, this indicates a clear evidence of a relationship between "mpg" and "horsepower".*
+
+ii. How strong is the relationship between the predictor and the response ?
+
+*We may note that as the $R^2$ is equal to `r summary(fit)$r.sq`, almost `r summary(fit)$r.sq * 100`% of the variability in "mpg" can be explained using "horsepower".*
+
+iii. Is the relationship between the predictor and the response positive or negative ?
+
+*As the coeficient of "horsepower" is negative, the relationship is also negative.*
+
+iv. What is the predicted $mpg$ associated with a "horsepower" of 98 ? What are the associated 95% confidence and prediction intervals ?
+
+```{r}
+predict(fit, data.frame(horsepower = 98), interval = "confidence")
+```
+
+(b) Plot the response and the predictor. Use the abline() function to display the least squares regression line.
+
+```{r}
+plot(Auto$horsepower, Auto$mpg, main = "Scatterplot of mpg vs. horsepower", xlab = "horsepower", ylab = "mpg", col = "blue")
+abline(fit, col = "red")
+```
+
+(c) Use the plot() function to produce diagnostic plots of the least squares regression fit. Comment on any problems you see with the fit.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(fit)
+```
+
+*The plot of residuals vs fitted values indicates the presence of non linearity in the data. The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2) and a few high leverage points.*
+
+**Q9.** This question involves the use of multiple linear regression on the "Auto" data set.
+
+(a) Produce a scatterplot matrix which include all the variables in the data set.
+
+```{r}
+pairs(Auto)
+```
+
+(b) Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the "name" variable, which is qualitative.
+
+```{r}
+names(Auto)
+cor(Auto[1:8])
+```
+
+(c) Use the lm() function to perform a multiple linear regression with "mpg" as the response and all other variables except "name" as the predictors. Use the summary() function to print the results. Comment on the output. For instance :
+
+i. Is there a relationship between the predictors and the response ?
+
+```{r}
+fit2 <- lm(mpg ~ . - name, data = Auto)
+summary(fit2)
+```
+
+*We can answer this question by again testing the hypothesis $H_0 : \beta_i = 0 \forall i$. The p-value corresponding to the F-statistic is `r as.numeric(pf(summary(fit2)$fstatistic[1], summary(fit2)$fstatistic[2], summary(fit2)$fstatistic[3], lower.tail = F))`, this indicates a clear evidence of a relationship between "mpg" and the other predictors.*
+
+ii. Which predictors appear to have a statistically significant relationship to the response ?
+
+*We can answer this question by checking the p-values associated with each predictor's t-statistic. We may conclude that all predictors are statistically significant except "cylinders", "horsepower" and "acceleration".*
+
+iii. What does the coefficient for the "year" variable suggest ?
+
+*The coefficient ot the "year" variable suggests that the average effect of an increase of 1 year is an increase of `r summary(fit2)$coef[7, 1]` in "mpg" (all other predictors remaining constant).*
+
+(d) Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers ? Does the leverage plots identify any observations with unusually high leverages ?
+
+```{r}
+par(mfrow = c(2, 2))
+plot(fit2)
+```
+
+*As before, the plot of residuals vs fitted values indicates the presence of mild non linearity in the data. The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2) and a few high leverage points.*
+
+(e) Use the * and : symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant ?
+
+```{r}
+fit3 <- lm(mpg ~ .*., data = Auto[, 1:8])
+summary(fit3)
+```
+
+*The interactions between "acceleration:origin", "acceleration:year" and "displacement:year" appear to be statistically significant.*
+
+(f) Try a few different transformations of the variables, such as $\log{X}$, $\sqrt{X}$, $X^2$. Comment on your findings.
+
+```{r}
+par(mfrow = c(2, 2))
+plot(log(Auto$horsepower), Auto$mpg)
+plot(sqrt(Auto$horsepower), Auto$mpg)
+plot((Auto$horsepower)^2, Auto$mpg)
+```
+
+*We limit ourselves to examining "horsepower" as sole predictor. It seems that the log transformation gives the most linear looking plot.*
+
+**Q10.** This question should be answered using the "Carseats" data set.
+
+(a) Fit a multiple regression model to predict "Sales" using "Price", "Urban" and "US".
+
+```{r}
+data(Carseats)
+fit3 <- lm(Sales ~ Price + Urban + US, data = Carseats)
+summary(fit3)
+```
+
+(b) Provide an interpretation of each coefficient in the model. Be careful - some of the variables in the model are qualitative !
+
+*The coefficient of the "Price" variable may be interpreted by saying that the average effect of a price increase of 1 dollar is a decrease of `r abs(summary(fit3)$coef[2, 1]) * 1000` units in sales. The coefficient of the "Urban" variable may be interpreted by saying that on average the unit sales in urban location are `r abs(summary(fit3)$coef[3, 1]) * 1000` units less than in rural location. The coefficient of the "US" variable may be interpreted by saying that on average the unit sales in a US store are `r abs(summary(fit3)$coef[4, 1]) * 1000` units more than in a non US store.*
+
+(c) Write out the model in equation form, being careful to handle the qualitative variables properly.
+
+*The model may be written as
+\[Sales = `r summary(fit3)$coef[1, 1]` + (`r summary(fit3)$coef[2, 1]`)\times Price + (`r summary(fit3)$coef[3, 1]`)\times Urban + (`r summary(fit3)$coef[4, 1]`)\times US + \varepsilon\]
+with $Urban = 1$ if the store is in an urban location and $0$ if not and $US = 1$ if the store is in the US and $0$ if not.*
+
+(d) For which of the predictors can you reject the null hypothesis $H_0 : \beta_j = 0$ ?
+
+*We can reject the null hypothesis for the "Price" and "US" variables.*
+
+(e) On the basis of your response to the previous question, fit a smaller model that only uses the predictors for which there is evidence of association with the outcome.
+
+```{r}
+fit4 <- lm(Sales ~ Price + US, data = Carseats)
+summary(fit4)
+```
+
+(f) How well do the models in (a) and (e) fit the data ?
+
+*The $R^2$ for the smaller model is marginally better than for the bigger model. Essentially about `r summary(fit4)$r.sq * 100`% of the variability is explained by the model.*
+
+(g) Using the model from (e), obtain 95% confidence intervals for the coefficient(s).
+
+```{r}
+confint(fit4)
+```
+
+(h) Is there evidence of outliers or high leverage observations in the model from (e) ?
+
+```{r}
+par(mfrow = c(2, 2))
+plot(fit4)
+```
+
+*The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and a few high leverage points.*
+
+**Q11.** In this problem we will investigate the t-statistic for the null hypothesis $H_0 : \beta = 0$ in simple linear regression without an intercept. To begin, we generate a predictor $x$ and a response $y$ as follows.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+y <- 2 * x + rnorm(100)
+```
+
+(a) Perform a simple linear regression of $y$ onto $x$, without an intercept. Report the coefficient estimate $\hat{\beta}$, the standard error of this coefficient estimate, and the t-statistic and p-value associated with the null hypothesis $H_0$. Comment on these results.
+
+```{r}
+fit5 <- lm(y ~ x + 0)
+summary(fit5)
+```
+
+*According to the summary above, we have a value of `r summary(fit5)$coef[1, 1]` for $\hat{\beta}$, a value of `r summary(fit5)$coef[1, 2]` for the standard error, a value of `r summary(fit5)$coef[1, 3]` for the t-statistic and a value of `r summary(fit5)$coef[1, 4]` for the p-value. The small p-value allows us to reject $H_0$.*
+
+(b) Now perform a simple linear regression of $x$ onto $y$, without an intercept. Report the coefficient estimate $\hat{\beta}$, the standard error of this coefficient estimate, and the t-statistic and p-value associated with the null hypothesis $H_0$. Comment on these results.
+
+```{r}
+fit6 <- lm(x ~ y + 0)
+summary(fit6)
+```
+
+*According to the summary above, we have a value of `r summary(fit6)$coef[1, 1]` for $\hat{\beta}$, a value of `r summary(fit6)$coef[1, 2]` for the standard error, a value of `r summary(fit6)$coef[1, 3]` for the t-statistic and a value of `r summary(fit6)$coef[1, 4]` for the p-value. The small p-value allows us to reject $H_0$.*
+
+(c) What is the relationship between the results obtained in (a) and (b) ?
+
+*We obtain the same value for the t-statistic and consequently the same value for the corresponding p-value.*
+
+(d) For the regrssion of $Y$ onto $X$ without an intercept, the t-statistic for $H_0 : \beta = 0$ takes the form $\hat{\beta}/SE(\hat{\beta})$, where $\hat{\beta}$ is given by (3.38), and where
+\[SE(\hat{\beta}) = \sqrt{\frac{\sum_{i=1}^n(y_i - x_i\hat{\beta})^2}{(n - 1)\sum_{i=1}^nx_i^2}}.\]
+Show algebraically, and confirm numerically in R, that the t-statistic can be written as
+\[\frac{\sqrt{n - 1}\sum_{i=1}^nx_iy_i}{\sqrt{(\sum_{i=1}^nx_i^2)(\sum_{i=1}^ny_i^2) - (\sum_{i=1}^nx_iy_i)}}.\]
+
+*We have
+\[t = \frac{\sum_ix_iy_y/\sum_jx_j^2}{\sqrt{\sum_i(y_i - x_i\hat{\beta})^2/(n - 1)\sum_jx_j^2}} = \frac{\sqrt{n - 1}\sum_ix_iy_i}{\sqrt{\sum_jx_j^2\sum_i(y_i - x_i\sum_jx_jy_j/\sum_jx_j^2)^2}} = \frac{\sqrt{n - 1}\sum_ix_iy_i}{\sqrt{(\sum_jx_j^2)(\sum_jy_j^2) - (\sum_jx_jy_j)}}.\]
+Now let's verify this result numerically.*
+
+```{r}
+n <- length(x)
+t <- sqrt(n - 1)*(x %*% y)/sqrt(sum(x^2) * sum(y^2) - (x %*% y)^2)
+as.numeric(t)
+```
+
+*We may see that the t above is exactly the t-statistic given in the summary of "fit6".*
+
+(e) Using the results from (d), argue that the t-statistic for the regression of $y$ onto $x$ is the same t-statistic for the regression of $x$ onto $y$.
+
+*It is easy to see that if we replace $x_i$ by $y_i$ in the formula for the t-statistic, the result would be the same.*
+
+(f) In R, show that when regression is performed with an intercept, the t-statistic for $H_0 : \beta_1 = 0$ is the same for the regression of $y$ onto $x$ as it is the regression of $x$ onto $y$.
+
+```{r}
+fit7 <- lm(y ~ x)
+summary(fit7)
+fit8 <- lm(x ~ y)
+summary(fit8)
+```
+
+*It is again easy to see that the t-statistic for "fit7" and "fit8" are both equal to `r summary(fit7)$coef[2, 3]`.*
