@@ -475,18 +475,6 @@ cor(auto$displacement, auto$horsepower)
 
 ```r
 library(MASS)
-```
-
-```
-## 
-## Attaching package: 'MASS'
-## 
-## The following object is masked _by_ '.GlobalEnv':
-## 
-##     Boston
-```
-
-```r
 Boston$chas <- as.factor(Boston$chas)
 nrow(Boston)
 ```
