@@ -304,3 +304,336 @@ summary(fit8)
 ```
 
 *It is again easy to see that the t-statistic for "fit7" and "fit8" are both equal to `r summary(fit7)$coef[2, 3]`.*
+
+**Q12.** This problem involves simple linear regression without an intercept.
+
+(a) Recall that the coefficient estimate $\hat{\beta}$ for the linear regression of $Y$ onto $X$ witout an intercept is given by (3.38). Under what circumstance is the coefficient estimate for the regression of $X$ onto $Y$ the same as the coefficient estimate for the regression of $Y$ onto $X$ ?
+
+*The coefficient estimate for the regression of $Y$ onto $X$ is
+\[\hat{\beta} = \frac{\sum_ix_iy_i}{\sum_jx_j^2};\]
+The coefficient estimate for the regression of $X$ onto $Y$ is
+\[\hat{\beta}' = \frac{\sum_ix_iy_i}{\sum_jy_j^2}.\]
+The coefficients are the same iff $\sum_jx_j^2 = \sum_jy_j^2$.*
+
+(b) Generate an example in R with $n = 100$ observations in which the coefficient estimate for the regression of $X$ onto $Y$ is different from the coefficient estimate for the regression of $Y$ onto $X$.
+
+```{r}
+set.seed(1)
+x <- 1:100
+sum(x^2)
+y <- 2 * x + rnorm(100, sd = 0.1)
+sum(y^2)
+fit.Y <- lm(y ~ x + 0)
+fit.X <- lm(x ~ y + 0)
+summary(fit.Y)
+summary(fit.X)
+```
+
+(c) Generate an example in R with $n = 100$ observations in which the coefficient estimate for the regression of $X$ onto $Y$ is the same as the coefficient estimate for the regression of $Y$ onto $X$.
+
+```{r}
+x <- 1:100
+sum(x^2)
+y <- 100:1
+sum(y^2)
+fit.Y <- lm(y ~ x + 0)
+fit.X <- lm(x ~ y + 0)
+summary(fit.Y)
+summary(fit.X)
+```
+
+**Q13.** In this exercise you will create some simulated data and will fit simple linear regression models to it. Make sure to use set.seed(1) prior to starting part (a) to ensure conistent results.
+
+(a) Using the rnorm() function, create a vector, "x", containing 100 observations drawn from a $N(0,1)$ distribution. This represents a feature, $X$.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+```
+
+(b) Using the rnorm() function, create a vector, "eps", containing 100 observations drawn from a $N(0, 0.25)$ distribution.
+
+```{r}
+eps <- rnorm(100, sd = 0.25)
+```
+
+(c) Using "x" and "eps", generate a vector "y" according to the model
+\[Y = -1 + 0.5X + \varepsilon.\]
+What is the length of the vector "y" ? What are the values of $\beta_0$ and $\beta_1$ in this linear model ?
+
+```{r}
+y <- -1 + 0.5 * x + eps
+length(y)
+```
+
+*The values of $\beta_0$ and $\beta_1$ are $-1$ and $0.5$ respectively.*
+
+(d) Create a scatterplot displaying the relationship between "x" and "y". Comment on what you observe.
+
+```{r}
+plot(x, y)
+```
+
+*The relationship between "x" and "y" looks linear with some noise introduced by the "eps" variable.*
+
+(e) Fit a least squares linear model to predict "y" using "x". Comment on the model obtained. How do $\hat{\beta}_0$ and $\hat{\beta}_1$ compare to $\beta_0$ and $\beta_1$ ?
+
+```{r}
+fit9 <- lm(y ~ x)
+summary(fit9)
+```
+
+*The values of $\hat{\beta}_0$ and $\hat{\beta}_1$ are pretty close to $\beta_0$ and $\beta_1$.*
+
+(f) Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() function to create an appropriate legend.
+
+```{r}
+plot(x, y)
+abline(fit9, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+(g) Now fit a polynomial regression model that predicts "y" using "x" and "x^2". Is there evidence that the quadratic term improves the model fit ? Explain your answer.
+
+```{r}
+fit10 <- lm(y ~ x + I(x^2))
+summary(fit10)
+```
+
+*The coefficient for "x^2" is not significant as its p-value is higher than 0.05. So there is not sufficient evidence that the quadratic term improves the model fit even though the $R^2$ is slightly higher than the linear model.*
+
+(h) Repeat (a)-(f) after modifying the data generation process in such a way that there is less noise in the data. The initial model should remain the same. Describe your results.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, sd = 0.0025)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit11 <- lm(y ~ x)
+summary(fit11)
+abline(fit11, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+*We reduced the noise by decreasing the variance of the normal distribution used to generate the error term $\varepsilon$. We may see that the coefficients are very close to the previous ones, but now, as the relationship is nearly linear, we have a much higher $R^2$ namely 1. Moreover, the two lines overlap each other as we have very little noise.*
+
+(i) Repeat (a)-(f) after modifying the data generation process in such a way that there is more noise in the data. The initial model should remain the same. Describe your results.
+
+```{r}
+set.seed(1)
+x <- rnorm(100)
+eps <- rnorm(100, sd = 2.5)
+y <- -1 + 0.5 * x + eps
+plot(x, y)
+fit12 <- lm(y ~ x)
+summary(fit12)
+abline(fit12, col = "red")
+abline(-1, 0.5, col = "blue")
+legend("topleft", c("Least square", "Regression"), col = c("red", "blue"), lty = c(1, 1))
+```
+
+*We increased the noise by increasing the variance of the normal distribution used to generate the error term $\varepsilon$. We may see that the coefficients are again very close to the previous ones, but now, as the relationship is not quite linear, we have a much lower $R^2$. Moreover, the two lines are wider apart but are still really close to each other as we have a fairly large data set.*
+
+(j) What are the confidence intervals for $\beta_0$ and $\beta_1$ based on the original data set, the noisier data set, and the less noisy data set ? Comment on your results.
+
+```{r}
+confint(fit9)
+confint(fit11)
+confint(fit12)
+```
+
+*As the noise increases, the confidence intervals widen. With less noise, there is more predactibility in the data set.*
+
+**Q14.** This problem focuses on the collinearity problem.
+
+(a) Perform the following commands in R.
+
+```{r}
+set.seed(1)
+x1 <- runif(100)
+x2 <- 0.5 * x1 + rnorm(100)/10
+y <- 2 + 2 * x1 + 0.3 * x2 + rnorm(100)
+```
+
+The last line corresponds to creating a linear model in which "y" is a function of "x1" and "x2". Write out the form of the linear model. What are the regression coefficients ?
+
+*The form of the linear model is
+\[Y = 2 + 2X_1 +0.3X_2 + \varepsilon\]
+with $\varepsilon$ a $N(0,1)$ random variable. The regression coefficients are respectively 2, 2 and 0.3.*
+
+(b) What is the correlation between "x1" and "x2" ? Create a scatterplot displaying the relationship between the variables.
+
+```{r}
+cor(x1, x2)
+plot(x1, x2)
+```
+
+*The variables seem highly correlated.*
+
+(c) Using this data, fit a least squares regression to predict "y" using "x1" and "x2". Describe the results obtained. What are $\hat{\beta}_0$, $\hat{\beta}_1$ and $\hat{\beta}_2$ ? How do these relate to the true $\beta_0$, $\beta_1$ and $\beta_2$ ? Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ? How about the null hypothesis $H_0 : \beta_2 = 0$ ?
+
+```{r}
+fit13 <- lm(y ~ x1 + x2)
+summary(fit13)
+```
+
+*The coefficients $\hat{\beta}_0$, $\hat{\beta}_1$ and $\hat{\beta}_2$ are respectively `r summary(fit13)$coef[1, 1]`, `r summary(fit13)$coef[2, 1]` and `r summary(fit13)$coef[3, 1]`. Only $\hat{\beta}_0$ is close to $\beta_0$. As the p-value is less than 0.05 we may reject $H_0$ for $\beta_1$, however we may not reject $H_0$ for $\beta_2$ as the p-value is higher than 0.05.*
+
+(d) Now fit a least squares regression to predict "y" using only "x1". Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ?
+
+```{r}
+fit14 <- lm(y ~ x1)
+summary(fit14)
+```
+
+*The coefficient for "x1" in this last model is very different from the one with "x1" and "x2" as predictors. In this case "x1" is highly significant as its p-value is very low, so we may reject $H_0$.*
+
+(e) Now fit a least squares regression to predict "y" using only "x2". Comment on your results. Can you reject the null hypothesis $H_0 : \beta_1 = 0$ ?
+
+```{r}
+fit15 <- lm(y ~ x2)
+summary(fit15)
+```
+
+*The coefficient for "x2" in this last model is very different from the one with "x1" and "x2" as predictors. In this case "x2" is highly significant as its p-value is very low, so we may again reject $H_0$.*
+
+(f) Do the results obtained in (c)-(e) contradict each other ? Explain your answer.
+
+*No, the results do not contradict each other. As the predictors "x1" and "x2" are highly correlated we are in the presence of collinearity, in this case it can be difficult to determine how each predictor separately is associated with the response. Since collinearity reduces the accuracy of the estimates of the regression coefficients, it causes the standard error for $\hat{\beta}_1$ to grow (we have a standard error of `r summary(fit13)$coef[2, 2]` and `r summary(fit13)$coef[3, 2]` for "x1" and "x2" respectively in the model with two predictors and only of `r summary(fit14)$coef[2, 2]` and `r summary(fit15)$coef[2, 2]` for "x1" and "x2" respectively in the models with only one predictor). Consequently, we may fail to reject $H_0$ in the presence of collinearity. The importance of the "x2" variable has been masked due to the presence of collinearity.*
+
+(g) Now suppose we obtain one additional observation, which was unfortunately mismeasured.
+
+```{r}
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+```
+
+Re-fit the linear models from (c) to (e) using this new data. What effect does this new observation have on each of the models ? In each model, is this observation an outlier ? A high-leverage point ? Explain your answers.
+
+```{r}
+fit16 <- lm(y ~ x1 + x2)
+fit17 <- lm(y ~ x1)
+fit18 <- lm(y ~ x2)
+summary(fit16)
+summary(fit17)
+summary(fit18)
+plot(fit16)
+plot(fit17)
+plot(fit18)
+```
+
+*In the model with two predictors, the last point is a high-leverage point. In the model with "x1" as sole predictor, the last point is an outlier. In the model with "x2" as sole predictor, the last point is a high leverage point.*
+
+**Q15.** This problem involves the "Boston" data set, which we saw in the lab for this chapter. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are th predictors.
+
+(a) For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response ? Create some plots to back up your assertions.
+
+```{r}
+library(MASS)
+attach(Boston)
+fit.zn <- lm(crim ~ zn)
+summary(fit.zn)
+fit.indus <- lm(crim ~ indus)
+summary(fit.indus)
+chas <- as.factor(chas)
+fit.chas <- lm(crim ~ chas)
+summary(fit.chas)
+fit.nox <- lm(crim ~ nox)
+summary(fit.nox)
+fit.rm <- lm(crim ~ rm)
+summary(fit.rm)
+fit.age <- lm(crim ~ age)
+summary(fit.age)
+fit.dis <- lm(crim ~ dis)
+summary(fit.dis)
+fit.rad <- lm(crim ~ rad)
+summary(fit.rad)
+fit.tax <- lm(crim ~ tax)
+summary(fit.tax)
+fit.ptratio <- lm(crim ~ ptratio)
+summary(fit.ptratio)
+fit.black <- lm(crim ~ black)
+summary(fit.black)
+fit.lstat <- lm(crim ~ lstat)
+summary(fit.lstat)
+fit.medv <- lm(crim ~ medv)
+summary(fit.medv)
+```
+
+*To find which predictors are significant, we have to test $H_0 : \beta_1 = 0$. All predictors have a p-value less than 0.05 except "chas", so we may conclude that there is a statistically significant association between each predictor and the response except for the "chas" predictor.*
+
+(b) Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis $H_0 : \beta_j = 0$ ?
+
+```{r}
+fit.all <- lm(crim ~ ., data = Boston)
+summary(fit.all)
+```
+
+*We may reject the null hypothesis for "zn", "dis", "rad", "black" and "medv".*
+
+(c) How do your results from (a) compare to your results from (b) ? Create a plot displaying the univariate regression coefficients from (a) on the x-axis, and the multiple regression coefficients from (b) on the y-axis. That is, each predictor is displayed as a single point on the plot. Its coefficient in a simple linear regression model is shown on the x-axis, and its coefficient estimate in the multiple linear regression model is shown on the y-axis.
+
+```{r}
+simple.reg <- vector("numeric",0)
+simple.reg <- c(simple.reg, fit.zn$coefficient[2])
+simple.reg <- c(simple.reg, fit.indus$coefficient[2])
+simple.reg <- c(simple.reg, fit.chas$coefficient[2])
+simple.reg <- c(simple.reg, fit.nox$coefficient[2])
+simple.reg <- c(simple.reg, fit.rm$coefficient[2])
+simple.reg <- c(simple.reg, fit.age$coefficient[2])
+simple.reg <- c(simple.reg, fit.dis$coefficient[2])
+simple.reg <- c(simple.reg, fit.rad$coefficient[2])
+simple.reg <- c(simple.reg, fit.tax$coefficient[2])
+simple.reg <- c(simple.reg, fit.ptratio$coefficient[2])
+simple.reg <- c(simple.reg, fit.black$coefficient[2])
+simple.reg <- c(simple.reg, fit.lstat$coefficient[2])
+simple.reg <- c(simple.reg, fit.medv$coefficient[2])
+mult.reg <- vector("numeric", 0)
+mult.reg <- c(mult.reg, fit.all$coefficients)
+mult.reg <- mult.reg[-1]
+plot(simple.reg, mult.reg, col = "red")
+```
+
+*There is a difference between the simple and multiple regression coefficients. This difference is due to the fact that in the simple regression case, the slope term represents the average effect of an increase in the predictor, ignoring other predictors. In contrast, in the multiple regression case, the slope term represents the average effect of an increase in the predictor, while holding other predictors fixed. It does make sense for the multiple regression to suggest no relationship between the response and some of the predictors while the simple linear regression implies the opposite because the correlation between the predictors show some strong relationships between some of the predictors.*
+
+```{r}
+cor(Boston[-c(1, 4)])
+```
+
+*So for example, when "age" is high there is a tendency in "dis" to be low, hence in simple linear regression which only examines "crim" versus "age", we observe that higher values of "age" are associated with higher values of "crim", even though "age" does not actually affect "crim". So "age" is a surrogate for "dis"; "age" gets credit for the effect of "dis" on "crim".*
+
+(d) Is there evidence of non-linear association between any of the predictors and the response ? To answer this question, for each predictor $X$, fit a model of the form
+\[Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon.\]
+
+```{r}
+fit.zn2 <- lm(crim ~ poly(zn, 3))
+summary(fit.zn2)
+fit.indus2 <- lm(crim ~ poly(indus, 3))
+summary(fit.indus2)
+fit.nox2 <- lm(crim ~ poly(nox, 3))
+summary(fit.nox2)
+fit.rm2 <- lm(crim ~ poly(rm, 3))
+summary(fit.rm2)
+fit.age2 <- lm(crim ~ poly(age, 3))
+summary(fit.age2)
+fit.dis2 <- lm(crim ~ poly(dis, 3))
+summary(fit.dis2)
+fit.rad2 <- lm(crim ~ poly(rad, 3))
+summary(fit.rad2)
+fit.tax2 <- lm(crim ~ poly(tax, 3))
+summary(fit.tax2)
+fit.ptratio2 <- lm(crim ~ poly(ptratio, 3))
+summary(fit.ptratio2)
+fit.black2 <- lm(crim ~ poly(black, 3))
+summary(fit.black2)
+fit.lstat2 <- lm(crim ~ poly(lstat, 3))
+summary(fit.lstat2)
+fit.medv2 <- lm(crim ~ poly(medv, 3))
+summary(fit.medv2)
+```
+
+*For "zn", "rm", "rad", "tax" and "lstat" as predictor, the p-values suggest that the cubic coefficient is not statistically significant; for "indus", "nox", "age", "dis", "ptratio" and "medv" as predictor, the p-values suggest the adequacy of the cubic fit; for "black" as predictor, the p-values suggest that the quandratic and cubic coefficients are not statistically significant, so in this latter case no non-linear effect is visible.*
