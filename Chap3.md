@@ -41,11 +41,11 @@ which gives us a starting salary of $137100\$$.*
 
 *False. To verify if the GPA/IQ has an impact on the quality of the model we need to test the hypothesis $H_0 : \hat{\beta_4} = 0$ and look at the p-value associated with the $t$ or the $F$ statistic to draw a conclusion.*
 
-**Q4.** I collect a set of data (n = 100 observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon$ .
+**Q4.** I collect a set of data ($n = 100$ observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon$ .
 
 (a) Suppose that the true relationship between $X$ and $Y$ is linear, i.e. $Y = \beta_0 + \beta_1 X + \varepsilon$. Consider the training residual sum of squares (RSS) for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.
 
-*Without knowing more details about the training data, we are not able to know which training RSS is lower between linear or cubic. Essentialy we are using a wrong model, so our results may show some inconsistence.*
+*Without knowing more details about the training data, it is difficult to know which training RSS is lower between linear or cubic. However, as the true relationship between $X$ and $Y$ is linear, we may expect the least squares line to be close to the true regression line, and consequently the RSS for the linear regression may be lower than for the cubic regression.*
 
 (b) Answer (a) using test rather than training RSS.
 
@@ -120,7 +120,7 @@ summary(fit)
 ## F-statistic:  600 on 1 and 390 DF,  p-value: <2e-16
 ```
 
-*We can answer this question by testing the hypothesis $H_0 : \beta_i = 0 \forall i$. The p-value corresponding to the F-statistic is 7.032 &times; 10<sup>-81</sup>, this indicates a clear evidence of a relationship between "mpg" and "horsepower".*
+*We can answer this question by testing the hypothesis $H_0 : \beta_i = 0\ \forall i$. The p-value corresponding to the F-statistic is 7.032 &times; 10<sup>-81</sup>, this indicates a clear evidence of a relationship between "mpg" and "horsepower".*
 
 ii. How strong is the relationship between the predictor and the response ?
 
@@ -162,7 +162,7 @@ plot(fit)
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
-*The plot of residuals vs fitted values indicates the presence of non linearity in the data. The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2) and a few high leverage points.*
+*The plot of residuals versus fitted values indicates the presence of non linearity in the data. The plot of standardized residuals versus leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and a few high leverage points.*
 
 **Q9.** This question involves the use of multiple linear regression on the "Auto" data set.
 
@@ -250,7 +250,7 @@ summary(fit2)
 ## F-statistic:  252 on 7 and 384 DF,  p-value: <2e-16
 ```
 
-*We can answer this question by again testing the hypothesis $H_0 : \beta_i = 0 \forall i$. The p-value corresponding to the F-statistic is 2.0371 &times; 10<sup>-139</sup>, this indicates a clear evidence of a relationship between "mpg" and the other predictors.*
+*We can answer this question by again testing the hypothesis $H_0 : \beta_i = 0\ \forall i$. The p-value corresponding to the F-statistic is 2.0371 &times; 10<sup>-139</sup>, this indicates a clear evidence of a relationship between "mpg" and the other predictors.*
 
 ii. Which predictors appear to have a statistically significant relationship to the response ?
 
@@ -270,7 +270,7 @@ plot(fit2)
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
 
-*As before, the plot of residuals vs fitted values indicates the presence of mild non linearity in the data. The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2) and a few high leverage points.*
+*As before, the plot of residuals versus fitted values indicates the presence of mild non linearity in the data. The plot of standardized residuals versus leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and one high leverage point.*
 
 (e) Use the * and : symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant ?
 
@@ -380,13 +380,13 @@ summary(fit3)
 
 (b) Provide an interpretation of each coefficient in the model. Be careful - some of the variables in the model are qualitative !
 
-*The coefficient of the "Price" variable may be interpreted by saying that the average effect of a price increase of 1 dollar is a decrease of 54.4588 units in sales. The coefficient of the "Urban" variable may be interpreted by saying that on average the unit sales in urban location are 21.9162 units less than in rural location. The coefficient of the "US" variable may be interpreted by saying that on average the unit sales in a US store are 1200.5727 units more than in a non US store.*
+*The coefficient of the "Price" variable may be interpreted by saying that the average effect of a price increase of 1 dollar is a decrease of 54.4588 units in sales all other predictors remaining fixed. The coefficient of the "Urban" variable may be interpreted by saying that on average the unit sales in urban location are 21.9162 units less than in rural location all other predictors remaining fixed. The coefficient of the "US" variable may be interpreted by saying that on average the unit sales in a US store are 1200.5727 units more than in a non US store all other predictors remaining fixed.*
 
 (c) Write out the model in equation form, being careful to handle the qualitative variables properly.
 
 *The model may be written as
 \[Sales = 13.0435 + (-0.0545)\times Price + (-0.0219)\times Urban + (1.2006)\times US + \varepsilon\]
-with $Urban = 1$ if the store is in an urban location and $0$ if not and $US = 1$ if the store is in the US and $0$ if not.*
+with $Urban = 1$ if the store is in an urban location and $0$ if not, and $US = 1$ if the store is in the US and $0$ if not.*
 
 (d) For which of the predictors can you reject the null hypothesis $H_0 : \beta_j = 0$ ?
 
@@ -450,7 +450,7 @@ plot(fit4)
 
 ![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 
-*The plot of standardized residuals vs leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and a few high leverage points.*
+*The plot of standardized residuals versus leverage indicates the presence of a few outliers (higher than 2 or lower than -2) and a one leverage point.*
 
 **Q11.** In this problem we will investigate the t-statistic for the null hypothesis $H_0 : \beta = 0$ in simple linear regression without an intercept. To begin, we generate a predictor $x$ and a response $y$ as follows.
 
@@ -1256,7 +1256,28 @@ plot(fit18)
 
 ```r
 library(MASS)
+```
+
+```
+## 
+## Attaching package: 'MASS'
+## 
+## The following object is masked _by_ '.GlobalEnv':
+## 
+##     Boston
+```
+
+```r
 attach(Boston)
+```
+
+```
+## The following object is masked _by_ .GlobalEnv:
+## 
+##     chas
+```
+
+```r
 fit.zn <- lm(crim ~ zn)
 summary(fit.zn)
 ```

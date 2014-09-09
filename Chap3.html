@@ -80,11 +80,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li>True or false: Since the coefficient for the GPA/IQ interaction term is very small, there is very little evidence of an interaction effect. Justify your answer.</li>
 </ol>
 <p><em>False. To verify if the GPA/IQ has an impact on the quality of the model we need to test the hypothesis <span class="math">\(H_0 : \hat{\beta_4} = 0\)</span> and look at the p-value associated with the <span class="math">\(t\)</span> or the <span class="math">\(F\)</span> statistic to draw a conclusion.</em></p>
-<p><strong>Q4.</strong> I collect a set of data (n = 100 observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. <span class="math">\(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon\)</span> .</p>
+<p><strong>Q4.</strong> I collect a set of data (<span class="math">\(n = 100\)</span> observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. <span class="math">\(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \varepsilon\)</span> .</p>
 <ol style="list-style-type: lower-alpha">
 <li>Suppose that the true relationship between <span class="math">\(X\)</span> and <span class="math">\(Y\)</span> is linear, i.e. <span class="math">\(Y = \beta_0 + \beta_1 X + \varepsilon\)</span>. Consider the training residual sum of squares (RSS) for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.</li>
 </ol>
-<p><em>Without knowing more details about the training data, we are not able to know which training RSS is lower between linear or cubic. Essentialy we are using a wrong model, so our results may show some inconsistence.</em></p>
+<p><em>Without knowing more details about the training data, it is difficult to know which training RSS is lower between linear or cubic. However, as the true relationship between <span class="math">\(X\)</span> and <span class="math">\(Y\)</span> is linear, we may expect the least squares line to be close to the true regression line, and consequently the RSS for the linear regression may be lower than for the cubic regression.</em></p>
 <ol start="2" style="list-style-type: lower-alpha">
 <li>Answer (a) using test rather than training RSS.</li>
 </ol>
@@ -939,8 +939,11 @@ summary(fit16)</code></pre>
 ## The following object is masked _by_ '.GlobalEnv':
 ## 
 ##     Boston</code></pre>
-<pre class="r"><code>attach(Boston)
-fit.zn &lt;- lm(crim ~ zn)
+<pre class="r"><code>attach(Boston)</code></pre>
+<pre><code>## The following object is masked _by_ .GlobalEnv:
+## 
+##     chas</code></pre>
+<pre class="r"><code>fit.zn &lt;- lm(crim ~ zn)
 summary(fit.zn)</code></pre>
 <pre><code>## 
 ## Call:
