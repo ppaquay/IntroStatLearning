@@ -167,3 +167,87 @@ fit <- glm(wage ~ cut(age, 8), data = Wage)
 preds <- predict(fit, data.frame(age = age.grid))
 lines(age.grid, preds, col = "red", lwd = 2)
 ```
+
+**Q7.** The "Wage" data set contains a number of other features nor explored in this chapter, such as marital status ("marit1"), job class ("jobclass"), and others. Explore the relationships between some of these other predictors and "wage", and use non-linear fitting techniques in order to fit flexible models to the data. Create plots of the results obtained, and write a summary of your findings.
+
+```{r}
+set.seed(1)
+summary(Wage$maritl)
+summary(Wage$jobclass)
+par(mfrow = c(1, 2))
+plot(Wage$maritl, Wage$wage)
+plot(Wage$jobclass, Wage$wage)
+```
+
+*We may conclude that a married couple earns more money on average, and also that informational jobs earns more on average. We will now use GAM to predict "wage" using natural spline functions of "year", "age", "education", "jobclass" and "maritl". *
+
+```{r}
+library(gam)
+fit0 <- gam(wage ~ lo(year, span = 0.7) + s(age, 5) + education, data = Wage)
+fit1 <- gam(wage ~ lo(year, span = 0.7) + s(age, 5) + education + jobclass, data = Wage)
+fit2 <- gam(wage ~ lo(year, span = 0.7) + s(age, 5) + education + maritl, data = Wage)
+fit3 <- gam(wage ~ lo(year, span = 0.7) + s(age, 5) + education + jobclass + maritl, data = Wage)
+anova(fit0, fit1, fit2, fit3)
+```
+
+*We may conclude that the model "fit3" is significantly better.*
+
+```{r}
+par(mfrow = c(3, 3))
+plot(fit3, se = T, col = "blue")
+```
+
+**Q8.** Fit some of the non-linear models investigated in this chapter to the "Auto" data set. Is there evidence for non-linear relationships in this data set ? Create some informative plots to justify your answer.
+
+```{r}
+set.seed(1)
+pairs(Auto)
+```
+
+*Wa may see that "mpg" is negatively correlated to "cylindes", "displacement", "horsepower" and "weight". We begin by performing polynomial regression of "wage" vs "displacement".*
+
+```{r}
+deltas <- rep(NA, 15)
+for (i in 1:15) {
+    fit <- glm(mpg ~ poly(displacement, i), data = Auto)
+    deltas[i] <- cv.glm(Auto, fit, K = 10)$delta[1]
+}
+plot(1:15, deltas, xlab = "Degree", ylab = "Test MSE", type = "l")
+d.min <- which.min(deltas)
+points(which.min(deltas), deltas[which.min(deltas)], col = "red", cex = 2, pch = 20)
+```
+
+*We may see that $d = 11$ is the optimal degree for the polynomial. Now we use step functions.*
+
+```{r}
+cvs <- rep(NA, 10)
+for (i in 2:10) {
+    Auto$dis.cut <- cut(Auto$displacement, i)
+    fit <- glm(mpg ~ dis.cut, data = Auto)
+    cvs[i] <- cv.glm(Auto, fit, K = 10)$delta[1]
+}
+plot(2:10, cvs[-1], xlab = "Cuts", ylab = "Test MSE", type = "l")
+d.min <- which.min(cvs)
+points(which.min(cvs), cvs[which.min(cvs)], col = "red", cex = 2, pch = 20)
+```
+
+*We may see that the error is minimum for 9 cuts. Now we use spline functions.*
+
+```{r}
+library(splines)
+cvs <- rep(NA, 10)
+for (i in 3:10) {
+    fit <- glm(mpg ~ ns(displacement, df = i), data = Auto)
+    cvs[i] <- cv.glm(Auto, fit, K = 10)$delta[1]
+}
+plot(3:10, cvs[-c(1, 2)], xlab = "Cuts", ylab = "Test MSE", type = "l")
+d.min <- which.min(cvs)
+points(which.min(cvs), cvs[which.min(cvs)], col = "red", cex = 2, pch = 20)
+```
+
+*We may see that the error is minimum for 9 degrees of freedom. It remains to use GAM.*
+
+```{r}
+fit <- gam(mpg ~ s(displacement, 4) + s(horsepower, 4), data = Auto)
+summary(fit)
+```
