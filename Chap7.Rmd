@@ -1,0 +1,169 @@
+Solutions of the exercises from Chapter 7
+============================================
+
+## Conceptual
+
+**Q1.** It was mentioned in the chapter that a cubic regression spline with one knot at $\xi$ can be obtained using a basis of the form $x$; $x^2$, $x^3$, $(x - \xi)^3_+$, where $(x - \xi)^3_+ = (x - \xi)^3$ if $x > \xi$ and equals $0$ otherwise. We will now show that a function of the form
+\[f(x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x - \xi)^3_+\]
+is indeed a cubic regression spline, regardless of the values of $\beta_0,\beta_1,\beta_2,\beta_3,\beta_4$.
+
+(a) Find a cubic polynomial
+\[f_1(x) = a_1 + b_1x + c_1x^2 + d_1x^3\]
+such that $f(x) = f_1(x)$ for all $x\le\xi$. Express $a_1,b_1,c_1,d_1$ in terms of $\beta_0,\beta_1,\beta_2,\beta_3,\beta_4$.
+
+*For $x\le\xi$, we have
+\[f(x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3,\]
+so we take $a_1 = \beta_0$, $b_1 = \beta_1$, $c_1 = \beta_2$ and $d_1 = \beta_3$.*
+
+(b) Find a cubic polynomial
+\[f_2(x) = a_2 + b_2x + c_2x^2 + d_2x^3\]
+such that $f(x) = f_2(x)$ for all $x>\xi$. Express $a_2,b_2,c_2,d_2$ in terms of $\beta_0,\beta_1,\beta_2,\beta_3,\beta_4$. We have now established that $f(x)$ is a piecewie polynomial.
+
+*For $x>\xi$, we have
+\[f(x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x - \xi)^3 = (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\xi^2\beta_4)x + (\beta_2 - 3\beta_4\xi)x^2 + (\beta_3 + \beta_4)x^3,\]
+so we take $a_2 = \beta_0 - \beta_4\xi^3$, $b_2 = \beta_1 + 3\xi^2\beta_4$, $c_2 = \beta_2 - 3\beta_4\xi$ and $d_2 = \beta_3 + \beta_4$.*
+
+(c) Show that $f_1(\xi) = f_2(\xi)$. That is $f(x)$ is continuous at $\xi$.
+
+*We have immediately that
+\[f_1(\xi) = \beta_0 + \beta_1\xi + \beta_2\xi^2 + \beta_3\xi^3\]
+and
+\[f_2(\xi) = (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\xi^2\beta_4)\xi + (\beta_2 - 3\beta_4\xi)\xi^2 + (\beta_3 + \beta_4)\xi^3 = \beta_0 + \beta_1\xi + \beta_2\xi^2 + \beta_3\xi^3.\]*
+
+(d) Show that $f_1'(\xi) = f_2'(\xi)$. That is $f'(x)$ is continuous at $\xi$.
+
+*We also have immediately that
+\[f_1'(\xi) = \beta_1 + 2\beta_2\xi + 3\beta_3\xi^2\]
+and
+\[f_2'(\xi) = \beta_1 + 3\xi^2\beta_4 + 2(\beta_2 - 3\beta_4\xi)\xi + 3(\beta_3 + \beta_4)\xi^2 = \beta_1 + 2\beta_2\xi + 3\beta_3\xi^2.\]*
+
+(e) Show that $f_1''(\xi) = f_2''(\xi)$. That is $f''(x)$ is continuous at $\xi$. Therefore, $f(x)$ is indeed a cubic spline.
+
+*We finally have that
+\[f_1''(\xi) = 2\beta_2 + 6\beta_3\xi\]
+and
+\[f_2''(\xi) = 2(\beta_2 - 3\beta_4\xi) + 6(\beta_3 + \beta_4)\xi = 2\beta_2 + 6\beta_3\xi.\]*
+
+**Q2.** Suppose that a curve $\hat{g}$ is computed to smoothly fit a set of $n$ points using the following formula
+\[\hat{g} = \arg\min_g\Biggl(\sum_{i=1}^n(y_i - g(x_i))^2 + \lambda\int[g^{(m)}(x)]^2dx\biggr),\]
+where $g^{(m)}$ represents the mth derivative of $g$ (and $g^{(0)} = g$). Provide example sketches of $\hat{g}$ in each of the following scenarios.
+
+(a) $\lambda = \infty$, $m = 0$.
+
+*In this case $\hat{g} = 0$ because a large smoothing parameter forces $g^{(0)}(x)\rightarrow 0$.*
+
+(b) $\lambda = \infty$, $m = 1$.
+
+*In this case $\hat{g} = c$ because a large smoothing parameter forces $g^{(1)}(x)\rightarrow 0$.*
+
+(c) $\lambda = \infty$, $m = 2$.
+
+*In this case $\hat{g} = cx + d$ because a large smoothing parameter forces $g^{(2)}(x)\rightarrow 0$.*
+
+(d) $\lambda = \infty$, $m = 3$.
+
+*In this case $\hat{g} = cx^2 + dx + e$ because a large smoothing parameter forces $g^{(3)}(x)\rightarrow 0$.*
+
+(e) $\lambda = 0$, $m = 3$.
+
+*The penalty term doesn't play any role, so in this case $g$ is the interpolating spline.*
+
+**Q3.** Suppose we fit a curve with basis functions $b_1(X) = X$, $b_2(X) = (X - 1)^2I(X\ge 1)$. We fit the linear regression model
+\[Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \varepsilon,\]
+and obtain coefficient estimates $\hat{\beta}_0 = 1$, $\hat{\beta}_1 = 1$, $\hat{\beta}_2 = -2$. Sketch the estimated curve between $X = -2$ and $X = 2$. Note the intercepts, slopes, and other relevant information.
+
+*The curve is linear between $-2$ and $1$ : $y = 1 + x$ and quadratic between $1$, and $2$ : $y = 1 + x -2(x - 1)^2$.*
+
+**Q4.** Suppose we fit a curve with basis functions $b_1(X) = I(0\le X\le 2) - (X - 1)I(1\le X\le 2)$, $b_2(X) = (X - 3)I(3\le X\le 4) + I(4\le X\le 5)$. We fit the linear regression model
+\[Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \varepsilon,\]
+and obtain coefficient estimates $\hat{\beta}_0 = 1$, $\hat{\beta}_1 = 1$, $\hat{\beta}_2 = 3$. Sketch the estimated curve between $X = -2$ and $X = 2$. Note the intercepts, slopes, and other relevant information.
+
+*The curve is constant between $-2$ and $0$ : $y = 1$, constant between $0$ and $1$ : $y = 2$, and linear between $1$ and $2$ : $y = 3 - x$.*
+
+**Q5.** consider two curves, $\hat{g}_1$ and $\hat{g}_2$, defined by
+\[\hat{g}_1 = \arg\min_g\Biggl(\sum_{i=1}^n(y_i - g(x_i))^2 + \lambda\int[g^{(3)}(x)]^2dx\biggr)\]
+\[\hat{g}_2 = \arg\min_g\Biggl(\sum_{i=1}^n(y_i - g(x_i))^2 + \lambda\int[g^{(4)}(x)]^2dx\biggr)\]
+where $g^{(m)}$ represents the mth derivative of $g$.
+
+(a) As $\lambda\rightarrow\infty$, will $\hat{g}_1$ or $\hat{g}_2$ have the smaller training RSS ?
+
+*The smoothing spline $\hat{g}_2$ will probably have the smaller training RSS because it will be a higher order polynomial due to the order of the penalty term (it will be more flexible).*
+
+(b) As $\lambda\rightarrow\infty$, will $\hat{g}_1$ or $\hat{g}_2$ have the smaller test RSS ?
+
+*As mentioned above we expect $\hat{g}_2$ to be more flexible, so it may overfit the data. It will probably be $\hat{g}_1$ that have the smaller test RSS.*
+
+(c) For $\lambda = 0$, will $\hat{g}_1$ or $\hat{g}_2$ have the smaller training and test RSS ?
+
+*If $\lambda = 0$, we have $\hat{g}_1 = \hat{g}_2$, so they will have the same training and test RSS.*
+
+## Applied
+
+**Q6.** In this exercise, you will further analyze the "Wage" data set considered throughout this chapter.
+
+(a) Perform polynomial regression to predict "wage" using "age". Use cross-validation to select the optimal degree $d$ for the polynomial. What degree was chosen, and how does this compare to the results of hypothesis testing using ANOVA ? Make a plot of the resulting polynomial fit to the data.
+
+*We will perform K-fold cross-validation with $K = 10$.*
+
+```{r}
+library(ISLR)
+library(boot)
+set.seed(1)
+deltas <- rep(NA, 10)
+for (i in 1:10) {
+    fit <- glm(wage ~ poly(age, i), data = Wage)
+    deltas[i] <- cv.glm(Wage, fit, K = 10)$delta[1]
+}
+plot(1:10, deltas, xlab = "Degree", ylab = "Test MSE", type = "l")
+d.min <- which.min(deltas)
+points(which.min(deltas), deltas[which.min(deltas)], col = "red", cex = 2, pch = 20)
+```
+
+*We may see that $d = 4$ is the optimal degree for the polynomial. We now use ANOVA to test the null hypothesis that a model $\mathcal{M}_1$ is sufficient to explain the data against the alternative hypothesis that a more complex $\mathcal{M}_2$ is required.*
+
+```{r}
+fit1 <- lm(wage ~ age, data = Wage)
+fit2 <- lm(wage ~ poly(age, 2), data = Wage)
+fit3 <- lm(wage ~ poly(age, 3), data = Wage)
+fit4 <- lm(wage ~ poly(age, 4), data = Wage)
+fit5 <- lm(wage ~ poly(age, 5), data = Wage)
+anova(fit1, fit2, fit3, fit4, fit5)
+```
+
+*We may see, by examining the p-values, that either a cubic or quartic polynomial appear to provide a reasonable fit to the data, but lower or higher order models are not justified. It remains to plot the resulting polynomial fit to the data.*
+
+```{r}
+plot(wage ~ age, data = Wage, col = "darkgrey")
+agelims <- range(Wage$age)
+age.grid <- seq(from = agelims[1], to = agelims[2])
+fit <- lm(wage ~ poly(age, 3), data = Wage)
+preds <- predict(fit, newdata = list(age = age.grid))
+lines(age.grid, preds, col = "red", lwd = 2)
+```
+
+(b) Fit a step function to predict "wage" using "age", and perform cross-validation to choose the optimal number of cuts. Make a plot of the fit obtained.
+
+*We will perform K-fold cross-validation with $K = 10$.*
+
+```{r}
+cvs <- rep(NA, 10)
+for (i in 2:10) {
+    Wage$age.cut <- cut(Wage$age, i)
+    fit <- glm(wage ~ age.cut, data = Wage)
+    cvs[i] <- cv.glm(Wage, fit, K = 10)$delta[1]
+}
+plot(2:10, cvs[-1], xlab = "Cuts", ylab = "Test MSE", type = "l")
+d.min <- which.min(cvs)
+points(which.min(cvs), cvs[which.min(cvs)], col = "red", cex = 2, pch = 20)
+```
+
+*We may see that the error is minimum for 8 cuts. Now, we fit the entire data with a step function using 8 cuts and plot it.*
+
+```{r}
+plot(wage ~ age, data = Wage, col = "darkgrey")
+agelims <- range(Wage$age)
+age.grid <- seq(from = agelims[1], to = agelims[2])
+fit <- glm(wage ~ cut(age, 8), data = Wage)
+preds <- predict(fit, data.frame(age = age.grid))
+lines(age.grid, preds, col = "red", lwd = 2)
+```
