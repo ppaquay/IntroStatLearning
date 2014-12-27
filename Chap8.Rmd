@@ -1,0 +1,100 @@
+Solutions of the exercises from Chapter 8
+============================================
+
+## Conceptual
+
+**Q1.** Draw an example (of your own invention) of a partition of two-dimensional feature space that could result from recursive binary splitting. Your example should contain at least six regions. Draw a decision tree corresponding to this partition. Be sure to label all aspects of your figures, including the regions $R_1,R_2,...$, the cutpoints $t_1,t_2,...$, and so forth.
+
+```{r}
+par(xpd = NA)
+plot(NA, NA, type = "n", xlim = c(0,100), ylim = c(0,100), xlab = "X", ylab = "Y")
+# t1: x = 40; (40, 0) (40, 100)
+lines(x = c(40,40), y = c(0,100))
+text(x = 40, y = 108, labels = c("t1"), col = "red")
+# t2: y = 75; (0, 75) (40, 75)
+lines(x = c(0,40), y = c(75,75))
+text(x = -8, y = 75, labels = c("t2"), col = "red")
+# t3: x = 75; (75,0) (75, 100)
+lines(x = c(75,75), y = c(0,100))
+text(x = 75, y = 108, labels = c("t3"), col = "red")
+# t4: x = 20; (20,0) (20, 75)
+lines(x = c(20,20), y = c(0,75))
+text(x = 20, y = 80, labels = c("t4"), col = "red")
+# t5: y=25; (75,25) (100,25)
+lines(x = c(75,100), y = c(25,25))
+text(x = 70, y = 25, labels = c("t5"), col = "red")
+
+text(x = (40+75)/2, y = 50, labels = c("R1"))
+text(x = 20, y = (100+75)/2, labels = c("R2"))
+text(x = (75+100)/2, y = (100+25)/2, labels = c("R3"))
+text(x = (75+100)/2, y = 25/2, labels = c("R4"))
+text(x = 30, y = 75/2, labels = c("R5"))
+text(x = 10, y = 75/2, labels = c("R6"))
+```
+
+**Q2.** It is mentioned in Section 8.2.3 that boosting using depth-one trees (or stumps) leads to an additive model : that is, a model of the form
+\[f(X) = \sum_{j = 1}^p f_j(X_j).\]
+Explain why this is the case.
+
+*We begin by detailing the boost algorithm step by step. At first, we let $\hat{f}(x) = 0$ and $r_i = y_i\ \forall i$. At step one, we let
+\[\hat{f}^1(x) = c_1I(x_1 < t_1) + c_1' = \frac{1}{\lambda}f_1(x_1),\]
+then $\hat{f}(x) = \lambda\hat{f}^1(x)$ and $r_i = y_i - \lambda\hat{f}^1(x_i)\ \forall i$. At step two, we have
+\[\hat{f}^2(x) = c_2I(x_j < t_2) + c_2' = \frac{1}{\lambda}f_j(x_j)\]
+with $j\ne 1$ as to maximize the fit to the residuals, another distinct stump must be fit. Then $\hat{f}(x) = \lambda\hat{f}^1(x) + \lambda\hat{f}^2(x)$ and $r_i = y_i - \lambda\hat{f}^1(x_i) - \lambda\hat{f}^2(x_i)\ \forall i$. Finally we have
+\[\hat{f}(x) =  \sum_{j = 1}^p f_j(x_j).\]*
+
+**Q3.** Consider the Gini index, classification error, and cross-entropy in a simple setting with two classes. Create a single plot that displays each of these quantities as a function of $\hat{p}_{m1}$. The $x$-axis should display $\hat{p}_{m1}$, ranging from 0 to 1, and the $y$-axis should display the value of the Gini index, classification error, and entropy.
+
+```{r}
+p <- seq(0, 1, 0.01)
+gini.index <- 2 * p * (1 - p)
+class.error <- 1 - pmax(p, 1 - p)
+cross.entropy <- - (p * log(p) + (1 - p) * log(1 - p))
+matplot(p, cbind(gini.index, class.error, cross.entropy), col = c("red", "green", "blue"))
+```
+
+**Q4.** This question relates to the plots in Figure 8.12.
+
+(a) Sketch the tree corresponding to the partition of the predictor space illustrated in the left-hand panel of Figure 8.12. The numbers inside the boxes indicate the mean of $Y$ within each region.
+
+*If $X_1 \ge 1$ then 5, else if $X_2 \ge 1$ then 15, else if $X_1 < 0$ then 3, else if $X_2 <0$ then 10, else 0.*
+
+(b) Create a diagram similar to the left-hand panel of Figure 8.12, using the tree illustrated in the right-hand panel of the same figure. You should divide up the predictor space into the correct regions, and indicate the mean for each region.
+
+```{r}
+par(xpd = NA)
+plot(NA, NA, type = "n", xlim = c(-2, 2), ylim = c(-3, 3), xlab = "X1", ylab = "X2")
+# X2 < 1
+lines(x = c(-2, 2), y = c(1, 1))
+# X1 < 1 with X2 < 1
+lines(x = c(1, 1), y = c(-3, 1))
+text(x = (-2 + 1)/2, y = -1, labels = c(-1.8))
+text(x = 1.5, y = -1, labels = c(0.63))
+# X2 < 2 with X2 >= 1
+lines(x = c(-2, 2), y = c(2, 2))
+text(x = 0, y = 2.5, labels = c(2.49))
+# X1 < 0 with X2<2 and X2>=1
+lines(x = c(0, 0), y = c(1, 2))
+text(x = -1, y = 1.5, labels = c(-1.06))
+text(x = 1, y = 1.5, labels = c(0.21))
+```
+
+**Q5.** Suppose we produce ten bootstrapped samples from a data set containing red and green classes. We then apply a classification tree to each bootstrapped sample and, for a specific value of $X$, produce 10 estimates of $P(\text{Class is Red}|X)$ :
+\[0.1,0.15,0.2,0.2,,0.55,0.6,0.6,0.65,0.7,0.75.\]
+There are two common ways to combine these results together into a single class prediction. One is the majority vote approach discussed in this chapter. The second approach is to classify based on the average probability. In this example, what is the final classification under each of these two approaches ?
+
+*With the majority vote approach, we classify $X$ as Red as it is the most commonly occurring class among the 10 predictions (6 for Red vs 4 for Green). With the average probability approach, we classify $X$ as Green as the average of the 10 probabilities is 0.45.*
+
+**Q6.** Provide a detailed explanation of the algorithm that is used to fit a regression tree.
+
+*First we do recursive binary splitting on the data. This is a top-down approach where recursively and greedily we find the best single partitioning of the data such that the reduction of RSS is the greatest. This process is applied to each of the split parts seperately until some minimal number of observations is present on each of the leaves.*
+
+*Then we apply cost complexity pruning of this larger tree formed in step 1 to obtain a sequence of best subtrees as a function of a parameter, $\alpha$. Each value of $\alpha$ corresponds to a different subtree which minimizes the equation
+$$\sum_{m=i}^{|T|}\sum_{i:x_i\in R_m}(y_i - \hat y_{R_m})^2 + \alpha |T|.$$
+Here $|T|$ is the number of terminal nodes on the tree. When $\alpha=0$ we have the original tree, and as $\alpha$ increases we get a more pruned version of the tree.*
+
+*Next, using K-fold CV, choose $\alpha$. For each fold, repeat steps 1 and 2, and then evaluate the MSE as a function of $\alpha$ on the held out fold. Chose an $\alpha$ that minimizes the average error.*
+
+*Given the $\alpha$ chosen in previous step, return the tree calculated using the formula laid out in step 2 on the entire dataset with that chosen value of $\alpha$.*
+
+## Applied
