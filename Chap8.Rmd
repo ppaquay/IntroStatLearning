@@ -98,3 +98,104 @@ Here $|T|$ is the number of terminal nodes on the tree. When $\alpha=0$ we have 
 *Given the $\alpha$ chosen in previous step, return the tree calculated using the formula laid out in step 2 on the entire dataset with that chosen value of $\alpha$.*
 
 ## Applied
+
+**Q7.** In the lab, we applied random forests to the "Boston" data using "mtry = 6" and using "ntree = 25" and "ntree = 500". Create a plot displaying the test error resulting from random forests on this data set for a more comprehensive range of values for "mtry" and "ntree". Describe the results obtained.
+
+```{r}
+library(MASS)
+library(randomForest)
+set.seed(1)
+train <- sample(1:nrow(Boston), nrow(Boston) / 2)
+Boston.train <- Boston[train, -14]
+Boston.test <- Boston[-train, -14]
+Y.train <- Boston[train, 14]
+Y.test <- Boston[-train, 14]
+rf.boston1 <- randomForest(Boston.train, y = Y.train, xtest = Boston.test, ytest = Y.test, mtry = ncol(Boston) - 1, ntree = 500)
+rf.boston2 <- randomForest(Boston.train, y = Y.train, xtest = Boston.test, ytest = Y.test, mtry = (ncol(Boston) - 1) / 2, ntree = 500)
+rf.boston3 <- randomForest(Boston.train, y = Y.train, xtest = Boston.test, ytest = Y.test, mtry = sqrt(ncol(Boston) - 1), ntree = 500)
+plot(1:500, rf.boston1$test$mse, col = "green", type = "l", xlab = "Number of Trees", ylab = "Test MSE", ylim = c(10, 19))
+lines(1:500, rf.boston2$test$mse, col = "red", type = "l")
+lines(1:500, rf.boston3$test$mse, col = "blue", type = "l")
+legend("topright", c("m = p", "m = p/2", "m = sqrt(p)"), col = c("green", "red", "blue"), cex = 1, lty = 1)
+```
+
+*We may see that the Test MSE is very high for a single tree, it decreases as the number of trees increases. Also the Test MSE for all predictors is higher than for half the predictors or the square root of the number of predictors.*
+
+**Q8.** In the lab, a classification tree was applied to the "Carseats" data set after converting "Sales" into a qualitative response variable. Now we will seek to predict "Sales" using regression trees and related approaches, treating the response as a quantitative variable.
+
+(a) Split the data set into a training set and a test set.
+
+```{r}
+library(ISLR)
+set.seed(1)
+train <- sample(1:nrow(Carseats), nrow(Carseats) / 2)
+Carseats.train <- Carseats[train, ]
+Carseats.test <- Carseats[-train, ]
+```
+
+(b) Fit a regression tree to the training set. Plot the tree, and interpret the results. What test error rate do you obtain ?
+
+```{r}
+library(tree)
+tree.carseats <- tree(Sales ~ ., data = Carseats.train)
+summary(tree.carseats)
+plot(tree.carseats)
+text(tree.carseats, pretty = 0)
+yhat <- predict(tree.carseats, newdata = Carseats.test)
+mean((yhat - Carseats.test$Sales)^2)
+```
+
+*We may conclude that the Test MSE is about 4.15.*
+
+(c) Use cross-validation in order to determine the optimal level of tree complexity. Does pruning the tree improve the test error rate ?
+
+```{r}
+cv.carseats <- cv.tree(tree.carseats)
+plot(cv.carseats$size, cv.carseats$dev, type = "b")
+tree.min <- which.min(cv.carseats$dev)
+points(tree.min, cv.carseats$dev[tree.min], col = "red", cex = 2, pch = 20)
+```
+
+*In this case, the tree of size 8 is selected by cross-validation. We now prune the tree to obtain the 8-node tree.*
+
+```{r}
+prune.carseats <- prune.tree(tree.carseats, best = 8)
+plot(prune.carseats)
+text(prune.carseats, pretty = 0)
+yhat <- predict(prune.carseats, newdata = Carseats.test)
+mean((yhat - Carseats.test$Sales)^2)
+```
+
+*We may see that pruning the tree increases the Test MSE to 5.1.*
+
+(d) Use the bagging approach in order to analyze this data. What test error rate do you obtain ? Use the "importance()" function to determine which variables are most important.
+
+```{r}
+bag.carseats <- randomForest(Sales ~ ., data = Carseats.train, mtry = 10, ntree = 500, importance = TRUE)
+yhat.bag <- predict(bag.carseats, newdata = Carseats.test)
+mean((yhat.bag - Carseats.test$Sales)^2)
+```
+
+*We may see that bagging decreases the Test MSE to 2.6.*
+
+```{r}
+importance(bag.carseats)
+```
+
+*We may conclude that "Price" and "ShelveLoc" are the two most important variables.*
+
+(e) Use random forests to analyze this data. What test error rate do you obtain ? Use the "importance()" function to determine which variables are most important. Describe the effect of $m$, the number of variables considered at each split, on the error rate obtained.
+
+```{r}
+rf.carseats <- randomForest(Sales ~ ., data = Carseats.train, mtry = 3, ntree = 500, importance = TRUE)
+yhat.rf <- predict(rf.carseats, newdata = Carseats.test)
+mean((yhat.rf - Carseats.test$Sales)^2)
+```
+
+*In this case, with $m = \sqrt{p}$, we have a Test MSE of 3.3.*
+
+```{r}
+importance(rf.carseats)
+```
+
+*We may conclude that, in this case also, "Price" and "ShelveLoc" are the two most important variables.*
