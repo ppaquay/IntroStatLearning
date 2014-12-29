@@ -199,3 +199,94 @@ importance(rf.carseats)
 ```
 
 *We may conclude that, in this case also, "Price" and "ShelveLoc" are the two most important variables.*
+
+**Q9.** This problem involves the "OJ" data set which is part of the "ISLR" package.
+
+(a) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+
+```{r}
+set.seed(1)
+train <- sample(1:nrow(OJ), 800)
+OJ.train <- OJ[train, ]
+OJ.test <- OJ[-train, ]
+```
+
+(b) Fit a tree to the training data, with "Purchase" as the response and the other variables except for "Buy" as predictors. Use the "summary()" function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate ? How many terminal nodes does the tree have ?
+
+```{r}
+tree.oj <- tree(Purchase ~ ., data = OJ.train)
+summary(tree.oj)
+```
+
+*The fitted tree has 8 terminal nodes and a training error rate of 0.165.*
+
+(c) Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
+
+```{r}
+tree.oj
+```
+
+*We pick the node labelled 8, which is a terminal node because of the asterisk. The split criterion is LoyalCH < 0.035, the number of observations in that branch is 57 with a deviance of 10.07 and an overall prediction for the branch of MM. Less than 2% of the observations in that branch take the value of CH, and the remaining 98% take the value of MM.*
+
+(d) Create a plot of the tree, and interpret the results.
+
+```{r}
+plot(tree.oj)
+text(tree.oj, pretty = 0)
+```
+
+*We may see that the most important indicator of "Purchase" appears to be "LoyalCH", since the first branch differentiates the intensity of customer brand loyalty to CH. In fact, the top three nodes contain "LoyalCH".*
+
+(e) Predict the response on the test data, and produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate ?
+
+```{r}
+tree.pred <- predict(tree.oj, OJ.test, type = "class")
+table(tree.pred, OJ.test$Purchase)
+1 - (147 + 62) / 270
+```
+
+*We may conclude that the test error rate is about 22%.*
+
+(f) Apply the "cv.tree()" function to the training set in order to determine the optimal size tree.
+
+```{r}
+cv.oj <- cv.tree(tree.oj, FUN = prune.misclass)
+cv.oj
+```
+
+(g) Produce a plot with tree size on the $x$-axis and cross-validated classification error rate on the $y$-axis.
+
+```{r}
+plot(cv.oj$size, cv.oj$dev, type = "b", xlab = "Tree size", ylab = "Deviance")
+```
+
+(h) Which tree size corresponds to the lowest cross-validated classification error rate ?
+
+*We may see that the 2-node tree is the smallest tree with the  lowest classification error rate.*
+
+(i) Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation. If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.
+
+```{r}
+prune.oj <- prune.misclass(tree.oj, best = 2)
+plot(prune.oj)
+text(prune.oj, pretty = 0)
+```
+
+(j) Compare the training error rates between the pruned and unpruned trees. Which is higher ?
+
+```{r}
+summary(tree.oj)
+summary(prune.oj)
+```
+
+*The misclassification error rate is slightly higher for the pruned tree (0.1825 vs 0.165).*
+
+(k) Compare the test error rates between the pruned and unpruned trees. Which is higher ?
+
+```{r}
+prune.pred <- predict(prune.oj, OJ.test, type = "class")
+table(prune.pred, OJ.test$Purchase)
+1 - (119 + 81) / 270
+```
+
+*In this case, the pruning process increased the test error rate to about 26%, bit it produced a way more interpretable tree.*
