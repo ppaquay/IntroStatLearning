@@ -378,3 +378,97 @@ mean((yhat.bag - Hitters.test$Salary)^2)
 ```
 
 *The test MSE for bagging is 0.23, which is slightly lower than the test MSE for boosting.*
+
+**Q11.** This question uses the "Caravan" data set.
+
+(a) Create a training set consisting of the first 1000 observations, and a test set consisting of the remaining observations.
+
+```{r}
+set.seed(1)
+train <- 1:1000
+Caravan$Purchase <- ifelse(Caravan$Purchase == "Yes", 1, 0)
+Caravan.train <- Caravan[train, ]
+Caravan.test <- Caravan[-train, ]
+```
+
+(b) Fit a boosting model to the training set with "Purchase" as the response and the other variables as predictors. Use 1000 trees, and a shrinkage value of 0.01. Which predictors appear to be most important ?
+
+```{r}
+set.seed(1)
+boost.caravan <- gbm(Purchase ~ ., data = Caravan.train, distribution = "gaussian", n.trees = 1000, shrinkage = 0.01)
+summary(boost.caravan)
+```
+
+*The variables "PPERSAUT" and "MKOOPKLA" are the two most important variables.*
+
+(c) Use the boosting model to predict the response on the test data. Predict that a person will make a purchase if the estimated probability of purchase is greater than 20%. Form a confusion matrix. What fraction of the people predicted to make a purchase do in fact make one ? How does this compare with the results obtained from applying KNN or logistic regression to this data set ?
+
+```{r}
+probs.test <- predict(boost.caravan, Caravan.test, n.trees = 1000, type = "response")
+pred.test <- ifelse(probs.test > 0.2, 1, 0)
+table(Caravan.test$Purchase, pred.test)
+```
+
+*For boosting, the fraction of people predicted to make a purchase that in fact make one is `r 11 / (40 + 11)`.*
+
+```{r}
+logit.caravan <- glm(Purchase ~ ., data = Caravan.train, family = "binomial")
+probs.test2 <- predict(logit.caravan, Caravan.test, type = "response")
+pred.test2 <- ifelse(probs.test > 0.2, 1, 0)
+table(Caravan.test$Purchase, pred.test2)
+```
+
+For logistic regression, the fraction of people predicted to make a purchase that in fact make one is again `r 11 / (40 + 11)`.*
+
+**Q12.** Apply boosting, bagging, and random forests to a data set of your choice. Be sure to fit models on a training set and to evaluate their performance on a test set. How accurate are the results compared to simple methods like linear or logistic regression ? Which of these approaches yields the best performance ?
+
+*We will use the "Weekly" data set from the "ISLR" package to predict the "Direction" variable.*
+
+```{r}
+set.seed(1)
+train <- sample(nrow(Weekly), nrow(Weekly) / 2)
+Weekly$Direction <- ifelse(Weekly$Direction == "Up", 1, 0)
+Weekly.train <- Weekly[train, ]
+Weekly.test <- Weekly[-train, ]
+```
+
+*We begin with logistic regression.*
+
+```{r}
+logit.fit <- glm(Direction ~ . - Year - Today, data = Weekly.train, family = "binomial")
+logit.probs <- predict(logit.fit, newdata = Weekly.test, type = "response")
+logit.pred <- ifelse(logit.probs > 0.5, 1, 0)
+table(Weekly.test$Direction, logit.pred)
+```
+
+*We have a classification error of `r 1 - (11 + 282) / (11 + 244 + 8 + 282)`. We continue with boosting.*
+
+```{r}
+boost.fit <- gbm(Direction ~ . - Year - Today, data = Weekly.train, distribution = "bernoulli", n.trees = 5000)
+boost.probs <- predict(boost.fit, newdata = Weekly.test, n.trees = 5000)
+boost.pred <- ifelse(boost.probs > 0.5, 1, 0)
+table(Weekly.test$Direction, boost.pred)
+```
+
+*We have a classification error of `r 1 - (166 + 109) / (166 + 89 + 181 + 109)`. We continue with bagging.*
+
+```{r}
+bag.fit <- randomForest(Direction ~ . - Year - Today, data = Weekly.train, mtry = 6)
+bag.probs <- predict(bag.fit, newdata = Weekly.test)
+bag.pred <- ifelse(bag.probs > 0.5, 1, 0)
+table(Weekly.test$Direction, bag.pred)
+```
+
+*We have a classification error of `r 1 - (85 + 71) / (85 + 170 + 71 + 219)`. We end with random forests.*
+
+```{r}
+rf.fit <- randomForest(Direction ~ . - Year - Today, data = Weekly.train, mtry = 2)
+rf.probs <- predict(rf.fit, newdata = Weekly.test)
+rf.pred <- ifelse(rf.probs > 0.5, 1, 0)
+table(Weekly.test$Direction, rf.pred)
+```
+
+*We have a classification error of `r 1 - (69 + 228) / (69 + 186 + 62 + 228)`.*
+
+*We may conclude that random forests gave the lowest classification error.*
+
