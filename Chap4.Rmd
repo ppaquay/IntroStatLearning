@@ -1,6 +1,3 @@
----
-output: pdf_document
----
 Solutions of the exercises from Chapter 4
 ============================================
 
@@ -54,6 +51,8 @@ So we may conclude that, on average, the fraction of available observations we w
 
 (e) Now suppose that we wish to make a prediction for a test observation by creating a p-dimensional hypercube centered around the test observation that contains, on average, 10% of the training observations. For $p = 1, 2, 100$, what is the length of each side of the hypercube ? Comment on your answer. Note: A hypercube is a generalization of a cube to an arbitrary number of dimensions. When $p = 1$, a hypercube is simply a line segment, when $p = 2$ it is a square, and when $p = 100$ it is a 100-dimensional cube.
 
+*For $p = 1$, we have $l = 0.1$, for $p = 2$, we have $l = 0.1^{1/2}$ and for $p = 100$, we have $l = 0.1^{1/100}$.*
+
 **Q5.** We now examine the differences between LDA and QDA.
 
 (a) If the Bayes decision boundary is linear, do we expect LDA or QDA to perform better on the training set ? On the test set ?
@@ -91,7 +90,7 @@ By taking the logarithm of both sides, we get
 **Q7.** Suppose that we wish to predict whether a given stock will issue a dividend this year (“Yes” or “No”) based on $X$, last year’s percent profit. We examine a large number of companies and discover that the mean value of $X$ for companies that issued a dividend was $\overline{X} = 10$, while the mean for those that didn’t was $\overline{X} = 0$. In addition, the variance of $X$ for these two sets of companies was $\hat{\sigma}^2 = 36$. Finally, 80% of companies issued dividends. Assuming that $X$ follows a normal distribution, predict the probability that a company will issue a dividend this year given that its percentage return was $X = 4$ last year.
 
 *It suffices to plug in the parameters and $X$ values in the equation for $p_k(x)$. We get
-\[p_1(x) = \frac{0.8 e^{-(1/72)(x - 10)^2}}{0.8 e^{-(1/72)(x - 10)^2} + 0.2 e^{-(1/72)(x - 0)^2}} = 0.752;\]
+\[p_1(4) = \frac{0.8 e^{-(1/72)(4 - 10)^2}}{0.8 e^{-(1/72)(4 - 10)^2} + 0.2 e^{-(1/72)(4 - 0)^2}} = 0.752;\]
 so the probability that a company will issue a dividend this year given that its percentage return was $X = 4$ last year is $0.752$.*
 
 **Q8.** Suppose that we take a data set, divide it into equally-sized training and test sets, and then try out two different classification procedures. First we use logistic regression and get an error rate of 20% on the training data and 30% on the test data. Next we use 1-nearest neighbors (i.e. $K = 1$) and get an average error rate (averaged over both test and training data sets) of 18%. Based on these results, which method should we prefer to use for classification of new observations ? Why ?
@@ -132,7 +131,7 @@ plot(Volume)
 
 *The correlations between the "lag" variables and today's returns are close to zero. The only substantial correlation is between "Year" and "Volume". When we plot "Volume", we see that it is increasing over time.*
 
-(b) Use the full data set to perform a logistic regression with "Direction" as the response and the five lag variables plus "Volume" as predictors. USe the summary function to print the results. Do any of the predictors appear to be statistically significant ? If so, which ones ?
+(b) Use the full data set to perform a logistic regression with "Direction" as the response and the five lag variables plus "Volume" as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant ? If so, which ones ?
 
 ```{r}
 fit.glm <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
@@ -189,7 +188,7 @@ pred.qda <- predict(fit.qda, Weekly.20092010)
 table(pred.qda$class, Direction.20092010)
 ```
 
-*In this case, we may conclude that the percentage of correct predictions on the test data is `r mean(pred.qda$class == Direction.20092010) * 100`%. In other words `r (1 - mean(pred.qda$class == Direction.20092010)) * 100`% is the test error rate. We could also say that for weeks when the market goes up, the model is right `r 61 / (61 + 0) * 100`% of the time. For weeks when the market goes down, the model is right only `r 0 /(0 + 43) * 100`% of the time. We may note, that QDA achieves a correctness of `r mean(pred.qda$class == Direction.20092010) * 100`% even though the model chooses "Up the whole time !*
+*In this case, we may conclude that the percentage of correct predictions on the test data is `r mean(pred.qda$class == Direction.20092010) * 100`%. In other words `r (1 - mean(pred.qda$class == Direction.20092010)) * 100`% is the test error rate. We could also say that for weeks when the market goes up, the model is right `r 61 / (61 + 0) * 100`% of the time. For weeks when the market goes down, the model is right only `r 0 /(0 + 43) * 100`% of the time. We may note, that QDA achieves a correctness of `r mean(pred.qda$class == Direction.20092010) * 100`% even though the model chooses "Up" the whole time !*
 
 (g) Repeat (d) using KNN with $K = 1$.
 
