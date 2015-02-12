@@ -230,7 +230,7 @@ fit.glm.1 <- glm(Direction ~ Lag1 + Lag2, data = Weekly[-1, ], family = "binomia
 summary(fit.glm.1)
 ```
 
-(c) Use the model from (b) to predict the direction of the first observation. You can do this by predicting that the first observation will go up if $P(\text{direction = "Up"} | Lag1,Lag2 ) > 0.5$. Was this observation correctly classified ?
+(c) Use the model from (b) to predict the direction of the first observation. You can do this by predicting that the first observation will go up if $P(\mbox{direction = Up} | Lag1,Lag2 ) > 0.5$. Was this observation correctly classified ?
 
 ```{r}
 predict.glm(fit.glm.1, Weekly[1, ], type = "response") > 0.5
