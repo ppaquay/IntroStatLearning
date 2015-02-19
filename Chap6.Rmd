@@ -3,11 +3,11 @@ Solutions of the exercises from Chapter 6
 
 ## Conceptual
 
-**Q1.** We perform best subset, forward stepwise, and backward stepwise selection on a single data set. For each approach, we obtain $p + 1$ models containing $0,1,2,cdots,p$ predictors. Explain your answers :
+**Q1.** We perform best subset, forward stepwise, and backward stepwise selection on a single data set. For each approach, we obtain $p + 1$ models containing $0,1,2,\cdots,p$ predictors. Explain your answers :
 
 (a) Which of the three models with $k$ predictors has the smallest training RSS ?
 
-*When performing best subset selection, the model with $k$ predictors is the model with the smallest RSS among all the $C_p^k$ models with $k$ predictors. When performing forward stepwise selection, the model with $k$ predictors is the model with the smallest RSS among the $p - k + 1$ models which augment the predictors in $\mathcal{M}_{k - 1}$ with one additional predictor. When performing backward stepwise selection, the model with $k$ predictors is the model with the smallest RSS among the $k + 1$ models which contains all but one of the predictors in $\mathcal{M}_{k + 1}$. So, the model with $k$ predictors which has the smallest training RSS is the one obtained from best subset selection as it is the one salected among all $k$ predictors models.*
+*When performing best subset selection, the model with $k$ predictors is the model with the smallest RSS among all the $C_p^k$ models with $k$ predictors. When performing forward stepwise selection, the model with $k$ predictors is the model with the smallest RSS among the $p - k$ models which augment the predictors in $\mathcal{M}_{k - 1}$ with one additional predictor. When performing backward stepwise selection, the model with $k$ predictors is the model with the smallest RSS among the $k$ models which contains all but one of the predictors in $\mathcal{M}_{k + 1}$. So, the model with $k$ predictors which has the smallest training RSS is the one obtained from best subset selection as it is the one selected among all $k$ predictors models.*
 
 (b) Which of the three models with $k$ predictors has the smallest test RSS ?
 
@@ -39,15 +39,13 @@ v. The predictors in the $k$-variable model identified by best subset are a subs
 
 (a) The lasso, relative to least squares, is :
 
-i. More flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance.
-
 *The lasso is less flexible and will give improved prediction accuracy when its increase in bias is less than its decrease in variance.*
 
 (b) Repeat (a) for ridge regression relative to least squares.
 
 *Same as lasso, ridge regression is less flexible and will give improved prediction accuracy when its increase in bias is less than its decrease in variance.*
 
-(c) Repear (a) for non-linear methods relative to least squares.
+(c) Repeat (a) for non-linear methods relative to least squares.
 
 *Non-linear methods are more flexible and will give improved prediction accuracy when their increase in variance are less than their decrease in bias.*
 
@@ -61,7 +59,7 @@ for a particular value of $s$. For parts (a) through (e), indicate which of i. t
 
 (b) Repeat (a) for test RSS.
 
-*Increase initially, and then eventually start increasing in a U shape. As we increase $s$ from 0, we are restricting the $\beta_j$ coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes at first a decrease in the training RSS before increasing again after that in a typical U shape.*
+*Decrease initially, and then eventually start increasing in a U shape. As we increase $s$ from 0, we are restricting the $\beta_j$ coefficients less and less (the coefficients will increase to their least squares estimates), and so the model is becoming more and more flexible which provokes at first a decrease in the test RSS before increasing again after that in a typical U shape.*
 
 (c) Repeat (a) for variance.
 
@@ -106,11 +104,11 @@ Suppose that $n = 2$, $p = 2$, $x_{11} = x_{12}$, $x_{21} = x_{22}$. Furthermore
 (a) Write out the ridge regression optimization problem in this setting.
 
 *According to this setting ($x_{11} = x_{12} = x_1$ and $x_{21} = x_{22} = x_2$), the ridge regression problem seeks to minimize
-\[(y_1 - \hat{\beta}_1x_1 - \hat{\beta}_2x_1)^2 + (y_1 - \hat{\beta}_1x_2 - \hat{\beta}_2x_2)^2 + \lambda(\hat{\beta}_1^2 + \hat{\beta}_2^2).\]*
+\[(y_1 - \hat{\beta}_1x_1 - \hat{\beta}_2x_1)^2 + (y_2 - \hat{\beta}_1x_2 - \hat{\beta}_2x_2)^2 + \lambda(\hat{\beta}_1^2 + \hat{\beta}_2^2).\]*
 
 (b) Argue that in this setting, the ridge coefficient estimates satisfy $\hat{\beta}_1 = \hat{\beta}_2$.
 
-*By taking the derivatives of the above expression with respect to $\hat{\beta}_1$ and $\hat{\beta}_2$, we obtain respectively
+*By taking the derivatives of the above expression with respect to $\hat{\beta}_1$ and $\hat{\beta}_2$ and setting them equal to $0$, we obtain respectively
 \[\hat{\beta}_1(x_1^2 + x_2^2 + \lambda) + \hat{\beta}_2(x_1^2 + x_2^2) = y_1x_1 + y_2x_2\]
 and
 \[\hat{\beta}_1(x_1^2 + x_2^2) + \hat{\beta}_2(x_1^2 + x_2^2 + \lambda) = y_1x_1 + y_2x_2.\]
@@ -125,7 +123,7 @@ By substracting the two expressions above we get $\hat{\beta}_1 = \hat{\beta}_2$
 
 *We will use the alternate form of the lasso optimization problem
 \[(y_1 - \hat{\beta}_1x_1 - \hat{\beta}_2x_1)^2 + (y_2 - \hat{\beta}_1x_2 - \hat{\beta}_2x_2)^2\text{ subject to }|\hat{\beta}_1| + |\hat{\beta}_2|\le s.\]
-Geometrically the lasso constraint take the form of a diamond centered at the origin of the plane $(\hat{\beta}_1,\hat{\beta}_2)$ which intersects the axes at a distance $s$ from the origin. By using the setting of this problem ($x_{11} = x_{12} = x_1$, $x_{21} = x_{22} = x_2$, $x_1 + x_2 = 0$ and $y_1 + y_2 = 0$), we have to minimize the exression
+Geometrically the lasso constraint take the form of a diamond centered at the origin of the plane $(\hat{\beta}_1,\hat{\beta}_2)$ which intersects the axes at a distance $s$ from the origin. By using the setting of this problem ($x_{11} = x_{12} = x_1$, $x_{21} = x_{22} = x_2$, $x_1 + x_2 = 0$ and $y_1 + y_2 = 0$), we have to minimize the expression
 \[2[y_1 - (\hat{\beta}_1 + \hat{\beta}_2)x_1]^2\ge 0.\]
 This optimization problem has a simple solution : $\hat{\beta}_1 + \hat{\beta}_2 = y_1/x_1$. Geometrically, this is a line parallel to the edge of the diamond of the constraints. Now, solutions to the lasso optimization problem are contours of the function $[y_1 - (\hat{\beta}_1 + \hat{\beta}_2)x_1]^2$ that intersects the diamond of the constraints. So, the entire edge $\hat{\beta}_1 + \hat{\beta}_2 = s$ (as is the edge $\hat{\beta}_1 + \hat{\beta}_2 = -s$) is a potential solution to the lasso optimization problem. Thus, the lasso optimization problem has a whole set of solutions instead of a unique one :
 \[\{(\hat{\beta}_1,\hat{\beta}_2) : \hat{\beta}_1 + \hat{\beta}_2 = s\text{ with }\hat{\beta}_1,\hat{\beta}_2\ge 0\text{ and }\hat{\beta}_1 + \hat{\beta}_2 = -s\text{ with }\hat{\beta}_1,\hat{\beta}_2\le 0\}.\]*
@@ -319,6 +317,8 @@ predict(fit.lasso, s = bestlam, type = "coefficients")[1:11, ]
 (a) Split the data set into a training and a test set.
 
 ```{r}
+library(ISLR)
+data(College)
 set.seed(11)
 train = sample(1:dim(College)[1], dim(College)[1] / 2)
 test <- -train
@@ -407,7 +407,7 @@ pls.r2 <- 1 - mean((pred.pls - College.test$Apps)^2) / mean((test.avg - College.
 
 *So the test $R^2$ for least squares is `r lm.r2`, the test $R^2$ for ridge is `r ridge.r2`, the test $R^2$ for lasso is `r lasso.r2`, the test $R^2$ for pcr is `r pcr.r2` and the test $R^2$ for pls is `r pls.r2`. All models, except PCR, predict college applications with high accuracy.*
 
-**Q10.** We have seen that as a number of features used in a model increases, the training error will ncessarily decrease, but the test error may not. We will now explore this in a simulated data set.
+**Q10.** We have seen that as a number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated data set.
 
 (a) Generate a data set with $p = 20$ features, $n = 1000$ observations, and an associated quantitative response vector generated according to the model
 \[Y = X\beta + \epsilon,\]
@@ -506,6 +506,7 @@ plot(val.errors, xlab = "Number of coefficients", ylab = "Error between estimate
 
 ```{r}
 library(MASS)
+data(Boston)
 set.seed(1)
 
 predict.regsubsets <- function(object, newdata, id, ...) {
@@ -518,10 +519,10 @@ predict.regsubsets <- function(object, newdata, id, ...) {
 
 k = 10
 folds <- sample(1:k, nrow(Boston), replace = TRUE)
-cv.errors <- matrix(NA, k, 14, dimnames = list(NULL, paste(1:14)))
+cv.errors <- matrix(NA, k, 13, dimnames = list(NULL, paste(1:13)))
 for (j in 1:k) {
-    best.fit <- regsubsets(crim ~ ., data = Boston[folds != j, ], nvmax = 14)
-    for (i in 1:14) {
+    best.fit <- regsubsets(crim ~ ., data = Boston[folds != j, ], nvmax = 13)
+    for (i in 1:13) {
         pred <- predict(best.fit, Boston[folds == j, ], id = i)
         cv.errors[j, i] <- mean((Boston$crim[folds == j] - pred)^2)
     }
