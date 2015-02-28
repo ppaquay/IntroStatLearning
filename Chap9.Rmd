@@ -1,0 +1,557 @@
+Solutions of the exercises from Chapter 9
+============================================
+
+## Conceptual
+
+**Q1.** This problem involves hyperplanes in two dimensions.
+
+(a) Sketch the hyperplane $1 + 3X_1 - X_2 = 0$. Indicate the set of points for which $1 + 3X_1 - X_2 > 0$, as well as the set of points for which $1 + 3X_1 - X_2 < 0$.
+
+(b) On the same plot, sketch the hyperplane $-2 + X_1 + 2X_2 = 0$. Indicate the set of points for which $-2 + X_1 + 2X_2 > 0$, as well as the set of points for which $-2 + X_1 + 2X_2 < 0$.
+
+```{r}
+x1 <- -10:10
+x2 <- 1 + 3 * x1
+plot(x1, x2, type = "l", col = "blue")
+text(c(0), c(-20), "Greater than 0", col = "blue")
+text(c(0), c(20), "Less than 0", col = "blue")
+lines(x1, 1 - x1/2, col = "red")
+text(c(0), c(-15), "Less than 0", col = "red")
+text(c(0), c(15), "Greater than 0", col = "red")
+```
+
+**Q2.** We have seen that in $p = 2$ dimensions, a linear boundary takes the form $\beta_0 + \beta_1X_1 + \beta_2X_2 = 0$. We now investigate a non-linear decision boundary.
+
+(a) Sketch the curve
+\[(1 + X_1)^2 + (2 - X_2)^2 = 4.\]
+
+```{r}
+plot(NA, NA, type = "n", xlim = c(-4, 2), ylim = c(-1, 5), asp = 1, xlab = "X1", ylab = "X2")
+symbols(c(-1), c(2), circles = c(2), add = TRUE, inches = FALSE)
+```
+
+(b) On your sketch, indicate the set of points for which
+\[(1 + X_1)^2 + (2 - X_2)^2 > 4,\]
+as well as the set of points for which
+\[(1 + X_1)^2 + (2 - X_2)^2 \le 4.\]
+
+```{r}
+plot(NA, NA, type = "n", xlim = c(-4, 2), ylim = c(-1, 5), asp = 1, xlab = "X1", ylab = "X2")
+symbols(c(-1), c(2), circles = c(2), add = TRUE, inches = FALSE)
+text(c(-1), c(2), "< 4")
+text(c(-4), c(2), "> 4")
+```
+
+(c) Suppose that a classifier assigns an observation to the blue class if
+\[(1 + X_1)^2 + (2 - X_2)^2 > 4,\]
+and to the red class otherwise. To what class is the observation $(0,0)$ classified ? $(-1,1)$ ? $(2,2)$ ? $(3,8)$ ?
+
+*It suffices to replace $X_1$ and $X_2$ by the coordinates of the points in the equation and to check if the result is less or greater than 4. For $(0,0)$, we have $5 > 4$ (blue class), for $(-1,1)$, we have $1 < 4$ (red class), for $(2,2)$, we have $9 > 4$ (blue class), for $(3,8)$, we have $52 > 4$ (blue class).*
+
+```{r}
+plot(c(0, -1, 2, 3), c(0, 1, 2, 8), col = c("blue", "red", "blue", "blue"), 
+    type = "p", asp = 1, xlab = "X1", ylab = "X2")
+symbols(c(-1), c(2), circles = c(2), add = TRUE, inches = FALSE)
+```
+
+(d) Argue that while the decision boundary in (c) is not linear in terms of $X_1$ and $X_2$, it is linear in terms of $X_1$, $X_1^2$, $X_2$ and $x_2^2$.
+
+*It is obvious since we may expand the equation of the decision boundary
+\[(1 + X_1)^2 + (2 - X_2)^2 = 4\]
+by
+\[X_1^2 + X_2^2 + 2X_1 - 4X_2 + 1 = 0\]
+which is linear in terms of $X_1$, $X_1^2$, $X_2$ and $x_2^2$.*
+
+**Q3.** Here we explore the maximal margin classifier on a toy data set.
+
+(a) We are given $n = 7$ observations in $p = 2$ dimensions. For each observation there is an associated class label.
+\[\begin{array}{cccc}
+\hline
+\mbox{Obs.} &X_1 &X_2 &Y \cr
+\hline
+1 &3 &4 &\mbox{Red} \cr
+2 &2 &2 &\mbox{Red} \cr
+3 &4 &4 &\mbox{Red} \cr
+4 &1 &4 &\mbox{Red} \cr
+5 &2 &1 &\mbox{Blue} \cr
+6 &4 &3 &\mbox{Blue} \cr
+7 &4 &1 &\mbox{Blue} \cr
+\hline
+\end{array}
+\]
+
+Sketch the observations.
+
+```{r}
+x1 = c(3, 2, 4, 1, 2, 4, 4)
+x2 = c(4, 2, 4, 4, 1, 3, 1)
+colors = c("red", "red", "red", "red", "blue", "blue", "blue")
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0, 5))
+```
+
+(b) Sketch the optimal separating hyperplane and provide the equation for this hyperplane (of the form (9.1)).
+
+*As shown in the plot, the optimal separating hyperplane has to be between the observations $(2,1)$ and $(2,2)$, and between the observations $(4,3)$ and $(4,4)$. So it is a line that passes through the points $(2,1.5)$ and $(4,3.5)$ which equation is
+\[X_1 - X_2 - 0.5 = 0.\]*
+
+```{r}
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0, 5))
+abline(-0.5, 1)
+```
+
+(c) Describe the classifiacation rule for the maximal margin classifier. It should be something along the lines of "Classify to Red if $\beta_0 + \beta_1X_1 + \beta_2X_2 > 0$, and classify to Blue otherwise." Provide the values for $\beta_0$, $\beta_1$ and $\beta_2$.
+
+*The classification rule is "Classify to Red if $X_1 - X_2 -0.5 < 0$, and classify to Blue otherwise."*
+
+(d) On your sketch, indicate the margin for the maximal margin hyperplane.
+
+```{r}
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0, 5))
+abline(-0.5, 1)
+abline(-1, 1, lty = 2)
+abline(0, 1, lty = 2)
+```
+
+*The margin is here equal to $1/4$.*
+
+(e) Indicate the support vectors for the maximal margin classifier.
+
+*The support vectors are the points $(2,1)$, $(2,2)$, $(4,3)$ and $(4,4)$.*
+
+(f) Argue that a slight movement of the seventh observation would not affect the maximal margin hyperplane.
+
+*By examining the plot, it is clear that if we moved the observation $(4,1)$, we would not change the maximal margin hyperplane as it is not a support vector.*
+
+(g) Sketch a hyperplane that is not the optimal separating hyperplane, and provide the equation for this hyperplane.
+
+*For example, the hyperplane which equation is $X_1 - X_2 - 0.3 = 0$ is not the optimal separating hyperplane.*
+
+```{r}
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0, 5))
+abline(-0.3, 1)
+```
+
+(h) Draw an additional observation on the plot so that two classes are no longer separable by a hyperplane.
+
+```{r}
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0, 5))
+points(c(3), c(1), col = c("red"))
+```
+
+*When the red point $(3,1)$ is added to the plot, the two classes are obviously not separable by a hyperplane anymore.*
+
+## Applied
+
+**Q4.** Generate a simulated two-class data set with 100 observations and two features in which there is a visible but non-linear separation between the two classes. Show that in this setting, a support vector machine with a polynomial kernel (with degree greater than 1) or a radial kernel will outperform a support vector classifier on the training data. Which technique performs best on test data ? Make plots and report training and test error rates in order to back up your assertions.
+
+*We begin by creating a data set with non-linear separation between the two classes.*
+
+```{r}
+library(e1071)
+set.seed(1)
+x <- rnorm(100)
+y <- 4 * x^2 + 1 + rnorm(100)
+class <- sample(100, 50)
+y[class] <- y[class] + 3
+y[-class] <- y[-class] - 3
+plot(x[class], y[class], col = "red", xlab = "X", ylab = "Y", ylim = c(-6, 30))
+points(x[-class], y[-class], col = "blue")
+```
+
+*Now, we fit a support vector classifier on the training data.*
+
+```{r}
+z <- rep(-1, 100)
+z[class] <- 1
+data <- data.frame(x = x, y = y, z = as.factor(z))
+train <- sample(100, 50)
+data.train <- data[train, ]
+data.test <- data[-train, ]
+svm.linear <- svm(z ~ ., data = data.train, kernel = "linear", cost = 10)
+plot(svm.linear, data.train)
+table(predict = predict(svm.linear, data.train), truth = data.train$z)
+```
+
+*The support vector classifier makes 6 errors on the training data.*
+
+*Next, we fit a support vector machine with a polynomial kernel.*
+
+```{r}
+svm.poly <- svm(z ~ ., data = data.train, kernel = "polynomial", cost = 10)
+plot(svm.poly, data.train)
+table(predict = predict(svm.poly, data.train), truth = data.train$z)
+```
+
+*The support vector machine with a polynomial kernel of degree 3 makes 9 errors on the training data.*
+
+*Finally, we fit a support vector machine with a radial kernel and a gamma of 1.*
+
+```{r}
+svm.radial <- svm(z ~ ., data = data.train, kernel = "radial", gamma = 1, cost = 10)
+plot(svm.radial, data.train)
+table(predict = predict(svm.radial, data.train), truth = data.train$z)
+```
+
+*The support vector machine with a radial kernel makes 0 error on the training data.*
+
+*Now, we check how these models fare when applied to the test data.*
+
+```{r}
+plot(svm.linear, data.test)
+table(predict = predict(svm.linear, data.test), truth = data.test$z)
+plot(svm.poly, data.test)
+table(predict = predict(svm.poly, data.test), truth = data.test$z)
+plot(svm.radial, data.test)
+table(predict = predict(svm.radial, data.test), truth = data.test$z)
+```
+
+*We may see that the linear, polynomial and radial support vector machines classify respectively 9, 6 and 1 observations incorrectly. So, radial kernel is the best model in this setting.*
+
+**Q5.** We have seen that we can fit an SVM with a non-linear kernel in order to perform classification using a non-linear decision boundary. We will now see that we can also obtain a non-linear decision boundary by performing logistic regression using non-linear transformations of the features.
+
+(a) Generate a data set with $n = 500$ and $p = 2$, such that the observations belong to two classes with a quadratic decision boundary between them.
+
+```{r}
+set.seed(1)
+x1 <- runif(500) - 0.5
+x2 <- runif(500) - 0.5
+y <- 1 * (x1^2 - x2^2 > 0)
+```
+
+(b) Plot the observations, colored according to their class labels. Your plot should display $X_1$ on the $x$-axis and $X_2$ on the $y$-axis.
+
+```{r}
+plot(x1, x2, xlab = "X1", ylab = "X2", col = (4 - y), pch = (3 - y))
+```
+
+(c) Fit a logistic regression model to the data, using $X_1$ and $X_2$ as predictors.
+
+```{r}
+logit.fit <- glm(y ~ x1 + x2, family = "binomial")
+summary(logit.fit)
+```
+
+*None of the variables are statistically significants.*
+
+(d) Apply this model to training data in order to obtain a predicted class label for each training observation. Plot the observations, colored according to the predicted class labels. The decision boundary should be linear.
+
+```{r}
+data <- data.frame(x1 = x1, x2 = x2, y = y)
+probs <- predict(logit.fit, data, type = "response")
+preds <- rep(0, 500)
+preds[probs > 0.47] <- 1
+plot(data[preds == 1, ]$x1, data[preds == 1, ]$x2, col = (4 - 1), pch = (3 - 1), xlab = "X1", ylab = "X2")
+points(data[preds == 0, ]$x1, data[preds == 0, ]$x2, col = (4 - 0), pch = (3 - 0))
+```
+
+*The decision boundary is obviously linear.*
+
+(e) Now fit a logistic regression model to the data using non-linear functions of $X_1$ and $X_2$ as predictors.
+
+```{r}
+logitnl.fit <- glm(y ~ poly(x1, 2) + poly(x2, 2) + I(x1 * x2), family = "binomial")
+summary(logitnl.fit)
+```
+
+*Here again, none of the variables are statistically significants.*
+
+(f) Apply this model to training data in order to obtain a predicted class label for each training observation. Plot the observations, colored according to the predicted class labels. The decision boundary should obvioulsy be non-linear.
+
+```{r}
+probs <- predict(logitnl.fit, data, type = "response")
+preds <- rep(0, 500)
+preds[probs > 0.47] <- 1
+plot(data[preds == 1, ]$x1, data[preds == 1, ]$x2, col = (4 - 1), pch = (3 - 1), xlab = "X1", ylab = "X2")
+points(data[preds == 0, ]$x1, data[preds == 0, ]$x2, col = (4 - 0), pch = (3 - 0))
+```
+
+*The non-linear decision boundary is surprisingly very similar to the true decision boundary.*
+
+(g) Fit a support vector classifier to the data with $X_1$ and $X_2$ as predictors. Obtain a class prediction for each training observation. Plot the observations, colored according to the predicted class labels.
+
+```{r}
+data$y <- as.factor(data$y)
+svm.fit <- svm(y ~ x1 + x2, data, kernel = "linear", cost = 0.01)
+preds <- predict(svm.fit, data)
+plot(data[preds == 0, ]$x1, data[preds == 0, ]$x2, col = (4 - 0), pch = (3 - 0), xlab = "X1", ylab = "X2")
+points(data[preds == 1, ]$x1, data[preds == 1, ]$x2, col = (4 - 1), pch = (3 - 1))
+```
+
+*This support vector classifier (even with low cost) classifies all points to a single class.*
+
+(h) Fit a SVM using a non-linear kernel to the data with $X_1$ and $X_2$ as predictors. Obtain a class prediction for each training observation. Plot the observations, colored according to the predicted class labels.
+
+```{r}
+```{r}
+data$y <- as.factor(data$y)
+svmnl.fit <- svm(y ~ x1 + x2, data, kernel = "radial", gamma = 1)
+preds <- predict(svmnl.fit, data)
+plot(data[preds == 0, ]$x1, data[preds == 0, ]$x2, col = (4 - 0), pch = (3 - 0), xlab = "X1", ylab = "X2")
+points(data[preds == 1, ]$x1, data[preds == 1, ]$x2, col = (4 - 1), pch = (3 - 1))
+```
+
+*Here again, the non-linear decision boundary is surprisingly very similar to the true decision boundary.*
+
+(i) Comment on your results.
+
+*We may conclude that SVM with non-linear kernel and logistic regression with interaction terms are equally very powerful for finding non-linear decision boundaries. Also, SVM with linear kernel and logistic regression without any interaction term are very bad when it comes to finding non-linear decision boundaries. However, one argument in favor of SVM is that it requires some manual tuning to find the right interaction terms when using logistic regression, although when using SVM we only need to tune gamma.* 
+
+**Q6.** At the end of Section 9.6.1, it is claimed that in the case of data that is just barely linearly separable, a support vector classifier with a small value of "cost" that misclassifies a couple of training observations may perform better on test data than one with a huge value of "cost" that does not misclassify any training observations. You will now investigate that claim.
+
+(a) Generate two-class data with $p = 2$ in such a way that the classes are just barely linearly separable.
+
+*We randomly generate 1000 points and scatter them across line $x = y$ with wide margin. We also create noisy points along the line $5x − 4y − 50 = 0$. These points make the classes barely separable and also shift the maximum margin classifier.*
+
+```{r}
+set.seed(1)
+x.one <- runif(500, 0, 90)
+y.one <- runif(500, x.one + 10, 100)
+x.one.noise <- runif(50, 20, 80)
+y.one.noise <- 5/4 * (x.one.noise - 10) + 0.1
+
+x.zero <- runif(500, 10, 100)
+y.zero <- runif(500, 0, x.zero - 10)
+x.zero.noise <- runif(50, 20, 80)
+y.zero.noise <- 5/4 * (x.zero.noise - 10) - 0.1
+
+class.one <- seq(1, 550)
+x <- c(x.one, x.one.noise, x.zero, x.zero.noise)
+y <- c(y.one, y.one.noise, y.zero, y.zero.noise)
+
+plot(x[class.one], y[class.one], col = "blue", pch = "+", ylim = c(0, 100))
+points(x[-class.one], y[-class.one], col = "red", pch = 4)
+```
+
+(b) Compute the cross-validation error rates for support vector classifiers with a range of "cost" values. How many training errors are misclassified for each value of "cost" considered, and how does this relate to the cross-validation errors obtained ?
+
+```{r cache = TRUE}
+set.seed(2)
+z <- rep(0, 1100)
+z[class.one] <- 1
+data <- data.frame(x = x, y = y, z = as.factor(z))
+tune.out <- tune(svm, z ~ ., data = data, kernel = "linear", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100, 1000, 10000)))
+summary(tune.out)
+```
+
+*A cost of 10000 seems the best choice of parmeter.*
+
+```{r}
+data.frame(cost = tune.out$performance$cost, misclass = tune.out$performance$error * 1100)
+```
+
+*Here a cost of 10000 classify all training points correctly.*
+
+(c) Generate an appropriate test data set, and compute the test errors corresponding to each of the values of "cost" considered. Which value of "cost" leads to the values of "cost" that yield the fewest training errors and the fewest cross-validation errors ?
+
+```{r}
+x.test <- runif(1000, 0, 100)
+class.one <- sample(1000, 500)
+y.test <- rep(NA, 1000)
+# Set y > x for class.one
+for (i in class.one) {
+    y.test[i] <- runif(1, x.test[i], 100)
+}
+# set y < x for class.zero
+for (i in setdiff(1:1000, class.one)) {
+    y.test[i] <- runif(1, 0, x.test[i])
+}
+plot(x.test[class.one], y.test[class.one], col = "blue", pch = "+")
+points(x.test[-class.one], y.test[-class.one], col = "red", pch = 4)
+set.seed(3)
+z.test <- rep(0, 1000)
+z.test[class.one] <- 1
+data.test <- data.frame(x = x.test, y = y.test, z = as.factor(z.test))
+costs <- c(0.01, 0.1, 1, 5, 10, 100, 1000, 10000)
+test.err <- rep(NA, length(costs))
+for (i in 1:length(costs)) {
+    svm.fit <- svm(z ~ ., data = data, kernel = "linear", cost = costs[i])
+    pred <- predict(svm.fit, data.test)
+    test.err[i] <- sum(pred != data.test$z)
+}
+data.frame(cost = costs, misclass = test.err)
+```
+
+*Costs of 1, 5 or 10 seem to perform better on test observations, this is much smaller than the value of 10000 for training observations.*
+
+(d) Discuss your results.
+
+*We again see an overfitting phenomenon for linear kernel. A large cost tries to fit correctly classify noisy-points and hence overfits the train data. A small cost, however, makes a few errors on the noisy test points and performs better on test data.*
+
+**Q7.** In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the "Auto" data set.
+
+(a) Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
+
+```{r}
+library(ISLR)
+var <- ifelse(Auto$mpg > median(Auto$mpg), 1, 0)
+Auto$mpglevel <- as.factor(var)
+```
+
+(b) Fit a support vector classifier to the data with various values of "cost", in order to predict whether a car gets high of low gas mileage. Report the cross-validation errors associated with different values of this parameter. Comment on your results.
+
+```{r cache = TRUE}
+set.seed(1)
+tune.out <- tune(svm, mpglevel ~ ., data = Auto, kernel = "linear", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100, 1000)))
+summary(tune.out)
+```
+
+*A cost of 1 seems to perform best.*
+
+(c) Now repeat (b), this time using SVMs with radial and polynomial basis kernels, with different values of "gamma" and "degree" and "cost". Comment on your results.
+
+```{r cache = TRUE}
+set.seed(1)
+tune.out <- tune(svm, mpglevel ~ ., data = Auto, kernel = "polynomial", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100), degree = c(2, 3, 4)))
+summary(tune.out)
+```
+
+*For a polynomial kernel, the lowest cross-validation error is obtained for a degree of 2 and a cost of 100.*
+
+```{r cache = TRUE}
+set.seed(1)
+tune.out <- tune(svm, mpglevel ~ ., data = Auto, kernel = "radial", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100), gamma = c(0.01, 0.1, 1, 5, 10, 100)))
+summary(tune.out)
+```
+
+*For a radial kernel, the lowest cross-validation error is obtained for a gamma of 0.01 and a cost of 100.*
+
+(d) Make some plots to back up your assertions in (b) and (c).
+
+```{r}
+svm.linear <- svm(mpglevel ~ ., data = Auto, kernel = "linear", cost = 1)
+svm.poly <- svm(mpglevel ~ ., data = Auto, kernel = "polynomial", cost = 100, degree = 2)
+svm.radial <- svm(mpglevel ~ ., data = Auto, kernel = "radial", cost = 100, gamma = 0.01)
+plotpairs = function(fit) {
+    for (name in names(Auto)[!(names(Auto) %in% c("mpg", "mpglevel", "name"))]) {
+        plot(fit, Auto, as.formula(paste("mpg~", name, sep = "")))
+    }
+}
+plotpairs(svm.linear)
+plotpairs(svm.poly)
+plotpairs(svm.radial)
+```
+
+**Q8.** This problem involves the "OJ" data set which is part of the ISLR package.
+
+(a) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+
+```{r}
+set.seed(1)
+train <- sample(nrow(OJ), 800)
+OJ.train <- OJ[train, ]
+OJ.test <- OJ[-train, ]
+```
+
+(b) Fit a support vector classifier to the training data using "cost"" = 0.01, with "Purchase" as the response and the other variables as predictors. Use the summary() function to produce summary statistics, and describe the results obtained.
+
+```{r}
+svm.linear <- svm(Purchase ~ ., data = OJ.train, kernel = "linear", cost = 0.01)
+summary(svm.linear)
+```
+
+*Support vector classifier creates 432 support vectors out of 800 training points. Out of these, 217 belong to level MM and remaining 215 belong to level CH.*
+
+(c) What are the training and test error rates ?
+
+```{r}
+train.pred <- predict(svm.linear, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(78 + 55) / (439 + 228 + 78 + 55)
+test.pred <- predict(svm.linear, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(31 + 18) / (141 + 80 + 31 + 18)
+```
+
+*The training error rate is 16.6% and test error rate is about 18.1%.*
+
+(d) Use the tune() function to select an optimal "cost". Consider values in the range 0.01 to 10.
+
+```{r cache = TRUE}
+set.seed(2)
+tune.out <- tune(svm, Purchase ~ ., data = OJ.train, kernel = "linear", ranges = list(cost = 10^seq(-2, 1, by = 0.25)))
+summary(tune.out)
+```
+
+*We may see that the optimal cost is 0.1.*
+
+(e) Compute the training and test error rates using this new value for "cost".
+
+```{r}
+svm.linear <- svm(Purchase ~ ., kernel = "linear", data = OJ.train, cost = tune.out$best.parameter$cost)
+train.pred <- predict(svm.linear, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(71 + 56) / (438 + 235 + 71 + 56)
+test.pred <- predict(svm.linear, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(32 + 19) / (140 + 79 + 32 + 19)
+```
+
+*We may see that, with the best cost, the training error rate is now 15.8% and the test error rate is 18.8%.*
+
+(f) Repeat parts (b) through (e) using a support vector machine with a radial kernel. Use the default value for "gamma".
+
+```{r}
+svm.radial <- svm(Purchase ~ ., kernel = "radial", data = OJ.train)
+summary(svm.radial)
+train.pred <- predict(svm.radial, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(77 + 39) / (455 + 229 + 77 + 39)
+test.pred <- predict(svm.radial, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(28 + 18) / (141 + 83 + 28 + 18)
+```
+
+*Radial kernel with default gamma creates 379 support vectors, out of which, 188 belong to level CH and remaining 191 belong to level MM. The classifier has a training error of 14.5% and a test error of 17% which is a slight improvement over linear kernel. We now use cross validation to find optimal cost.*
+
+```{r cache = TRUE}
+set.seed(2)
+tune.out <- tune(svm, Purchase ~ ., data = OJ.train, kernel = "radial", ranges = list(cost = 10^seq(-2, 
+    1, by = 0.25)))
+summary(tune.out)
+svm.radial <- svm(Purchase ~ ., kernel = "radial", data = OJ.train, cost = tune.out$best.parameter$cost)
+summary(svm.radial)
+train.pred <- predict(svm.radial, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(77 + 39) / (455 + 229 + 77 + 39)
+test.pred <- predict(svm.radial, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(28 + 18) / (141 + 83 + 28 + 18)
+```
+
+*Tuning does not reduce train and test error rates as we already used the optimal cost of 1.*
+
+(g) Repeat parts (b) through (e) using a support vector machine with a polynomial kernel. Set "degree" = 2.
+
+```{r}
+svm.poly <- svm(Purchase ~ ., kernel = "polynomial", data = OJ.train, degree = 2)
+summary(svm.poly)
+train.pred <- predict(svm.poly, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(105 + 33) / (461 + 201 + 105 + 33)
+test.pred <- predict(svm.poly, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(41 + 10) / (149 + 70 + 41 + 10)
+```
+
+*Polynomial kernel with default gamma creates 454 support vectors, out of which, 224 belong to level CH and remaining 230 belong to level MM. The classifier has a training error of 17.2% and a test error of 18.8% which is no improvement over linear kernel. We now use cross validation to find optimal cost.*
+
+```{r}
+set.seed(2)
+tune.out <- tune(svm, Purchase ~ ., data = OJ.train, kernel = "polynomial", degree = 2, ranges = list(cost = 10^seq(-2, 
+    1, by = 0.25)))
+summary(tune.out)
+svm.poly <- svm(Purchase ~ ., kernel = "polynomial", degree = 2, data = OJ.train, cost = tune.out$best.parameter$cost)
+summary(svm.poly)
+train.pred <- predict(svm.poly, OJ.train)
+table(OJ.train$Purchase, train.pred)
+(72 + 44) / (450 + 234 + 72 + 44)
+test.pred <- predict(svm.poly, OJ.test)
+table(OJ.test$Purchase, test.pred)
+(31 + 19) / (140 + 80 + 31 + 19)
+```
+
+*Tuning reduce train and test error rates.*
+
+(h) Overall, which approach seems to give the best results on this data ?
+
+*Overall, radial basis kernel seems to be producing minimum misclassification error on both train and test data.*
