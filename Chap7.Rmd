@@ -72,11 +72,28 @@ where $g^{(m)}$ represents the mth derivative of $g$ (and $g^{(0)} = g$). Provid
 \[Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \varepsilon,\]
 and obtain coefficient estimates $\hat{\beta}_0 = 1$, $\hat{\beta}_1 = 1$, $\hat{\beta}_2 = -2$. Sketch the estimated curve between $X = -2$ and $X = 2$. Note the intercepts, slopes, and other relevant information.
 
+```{r}
+x = -2:2
+y = 1 + x + -2 * (x-1)^2 * I(x>1)
+plot(x, y)
+```
+
 *The curve is linear between $-2$ and $1$ : $y = 1 + x$ and quadratic between $1$, and $2$ : $y = 1 + x -2(x - 1)^2$.*
 
 **Q4.** Suppose we fit a curve with basis functions $b_1(X) = I(0\le X\le 2) - (X - 1)I(1\le X\le 2)$, $b_2(X) = (X - 3)I(3\le X\le 4) + I(4\le X\le 5)$. We fit the linear regression model
 \[Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \varepsilon,\]
 and obtain coefficient estimates $\hat{\beta}_0 = 1$, $\hat{\beta}_1 = 1$, $\hat{\beta}_2 = 3$. Sketch the estimated curve between $X = -2$ and $X = 2$. Note the intercepts, slopes, and other relevant information.
+
+```{r}
+x = -2:2
+y = c(1 + 0 + 0, # x = -2
+      1 + 0 + 0, # x = -1
+      1 + 1 + 0, # x = 0
+      1 + (1-0) + 0, # x = 1
+      1 + (1-1) + 0 # x =2
+      )
+plot(x,y)
+```
 
 *The curve is constant between $-2$ and $0$ : $y = 1$, constant between $0$ and $1$ : $y = 2$, and linear between $1$ and $2$ : $y = 3 - x$.*
 
