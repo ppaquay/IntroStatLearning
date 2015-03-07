@@ -39,8 +39,8 @@ Explain why this is the case.
 *We begin by detailing the boost algorithm step by step. At first, we let $\hat{f}(x) = 0$ and $r_i = y_i\ \forall i$. At step one, we let
 \[\hat{f}^1(x) = c_1I(x_1 < t_1) + c_1' = \frac{1}{\lambda}f_1(x_1),\]
 then $\hat{f}(x) = \lambda\hat{f}^1(x)$ and $r_i = y_i - \lambda\hat{f}^1(x_i)\ \forall i$. At step two, we have
-\[\hat{f}^2(x) = c_2I(x_j < t_2) + c_2' = \frac{1}{\lambda}f_j(x_j)\]
-with $j\ne 1$ as to maximize the fit to the residuals, another distinct stump must be fit. Then $\hat{f}(x) = \lambda\hat{f}^1(x) + \lambda\hat{f}^2(x)$ and $r_i = y_i - \lambda\hat{f}^1(x_i) - \lambda\hat{f}^2(x_i)\ \forall i$. Finally we have
+\[\hat{f}^2(x) = c_2I(x_2 < t_2) + c_2' = \frac{1}{\lambda}f_2(x_2)\]
+as to maximize the fit to the residuals, another distinct stump must be fit. Then $\hat{f}(x) = \lambda\hat{f}^1(x) + \lambda\hat{f}^2(x)$ and $r_i = y_i - \lambda\hat{f}^1(x_i) - \lambda\hat{f}^2(x_i)\ \forall i$. Finally we have
 \[\hat{f}(x) =  \sum_{j = 1}^p f_j(x_j).\]*
 
 **Q3.** Consider the Gini index, classification error, and cross-entropy in a simple setting with two classes. Create a single plot that displays each of these quantities as a function of $\hat{p}_{m1}$. The $x$-axis should display $\hat{p}_{m1}$, ranging from 0 to 1, and the $y$-axis should display the value of the Gini index, classification error, and entropy.
@@ -289,7 +289,7 @@ table(prune.pred, OJ.test$Purchase)
 1 - (119 + 81) / 270
 ```
 
-*In this case, the pruning process increased the test error rate to about 26%, bit it produced a way more interpretable tree.*
+*In this case, the pruning process increased the test error rate to about 26%, but it produced a way more interpretable tree.*
 
 **Q10.** We now use boosting to predict "Salary" in the "Hitters" data set.
 
@@ -418,7 +418,7 @@ pred.test2 <- ifelse(probs.test > 0.2, 1, 0)
 table(Caravan.test$Purchase, pred.test2)
 ```
 
-For logistic regression, the fraction of people predicted to make a purchase that in fact make one is again `r 11 / (40 + 11)`.*
+*For logistic regression, the fraction of people predicted to make a purchase that in fact make one is again `r 11 / (40 + 11)`.*
 
 **Q12.** Apply boosting, bagging, and random forests to a data set of your choice. Be sure to fit models on a training set and to evaluate their performance on a test set. How accurate are the results compared to simple methods like linear or logistic regression ? Which of these approaches yields the best performance ?
 
