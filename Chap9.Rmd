@@ -54,7 +54,7 @@ plot(c(0, -1, 2, 3), c(0, 1, 2, 8), col = c("blue", "red", "blue", "blue"),
 symbols(c(-1), c(2), circles = c(2), add = TRUE, inches = FALSE)
 ```
 
-(d) Argue that while the decision boundary in (c) is not linear in terms of $X_1$ and $X_2$, it is linear in terms of $X_1$, $X_1^2$, $X_2$ and $x_2^2$.
+(d) Argue that while the decision boundary in (c) is not linear in terms of $X_1$ and $X_2$, it is linear in terms of $X_1$, $X_1^2$, $X_2$ and $X_2^2$.
 
 *It is obvious since we may expand the equation of the decision boundary
 \[(1 + X_1)^2 + (2 - X_2)^2 = 4\]
@@ -333,7 +333,7 @@ tune.out <- tune(svm, z ~ ., data = data, kernel = "linear", ranges = list(cost 
 summary(tune.out)
 ```
 
-*A cost of 10000 seems the best choice of parmeter.*
+*A cost of 10000 seems the best choice of parameter.*
 
 ```{r}
 data.frame(cost = tune.out$performance$cost, misclass = tune.out$performance$error * 1100)
@@ -375,7 +375,7 @@ data.frame(cost = costs, misclass = test.err)
 
 (d) Discuss your results.
 
-*We again see an overfitting phenomenon for linear kernel. A large cost tries to fit correctly classify noisy-points and hence overfits the train data. A small cost, however, makes a few errors on the noisy test points and performs better on test data.*
+*We again see an overfitting phenomenon for linear kernel. A large cost tries to correctly classify noisy-points and hence overfits the train data. A small cost, however, makes a few errors on the noisy test points and performs better on test data.*
 
 **Q7.** In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the "Auto" data set.
 
@@ -442,7 +442,7 @@ OJ.train <- OJ[train, ]
 OJ.test <- OJ[-train, ]
 ```
 
-(b) Fit a support vector classifier to the training data using "cost"" = 0.01, with "Purchase" as the response and the other variables as predictors. Use the summary() function to produce summary statistics, and describe the results obtained.
+(b) Fit a support vector classifier to the training data using "cost" = 0.01, with "Purchase" as the response and the other variables as predictors. Use the summary() function to produce summary statistics, and describe the results obtained.
 
 ```{r}
 svm.linear <- svm(Purchase ~ ., data = OJ.train, kernel = "linear", cost = 0.01)
