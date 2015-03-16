@@ -1,0 +1,388 @@
+Solutions of the exercises from Chapter 10
+============================================
+
+## Conceptual
+
+**Q1.** This problem involves $K$-means clustering algorithm.
+
+(a) Prove (10.12).
+
+*We may write
+\[\frac{1}{|C_k|}\sum_{i,i'\in C_k}\sum_{j=1}^p(x_{ij} - x_{i'j})^2 = \sum_i\sum_jx_{ij}^2 - 2\sum_i\sum_jx_{ij}\overline{x}_{kj} + \sum_i\sum_jx_{ij}^2 = 2\sum_i\sum_jx_{ij}^2 - 2|C_k|\sum_j\overline{x}_{kj}^2\]
+and
+\[2\sum_i\sum_jx_{ij}^2 - 4\sum_i\sum_jx_{ij}\overline{x}_{kj} + 2\sum_i\sum_j\overline{x}_{kj}^2 =  2\sum_i\sum_jx_{ij}^2 - 2|C_k|\sum_j\overline{x}_{kj}^2,\]
+which proves (10.12).*
+
+(b) On the basis of this identity, argue that the $K$-means clustering algorithm decreases the objective (10.11) at each iteration.
+
+*This identity shows us that at step 2.(b) of the algorithm (10.1), when we assign each observation to the cluster whose centroid is closest, we actually decrease the right member of the identity. So, we also decrease the left member of the identity which is our objective. Another way of seeing this is that the identity shows that minimizing the sum of the squared Euclidean distance for each cluster is the same as minimizing the within-cluster variance for each cluster.*
+
+**Q2.** Suppose that we have four observations, for which we compute a dissimilarity matrix, given by
+\[\pmatrix{ &0.3 &0.4 &0.7 \cr 0.3 & &0.5 &0.8 \cr 0.4 &0.5 & & 0.45 \cr 0.7 &0.8 &0.45 & }.\]
+For instance, the dissimilarity between the first and second observations is 0.3, and the dissimilarity between the second and fourth observations is 0.8.
+
+(a) On the basis of this dissimilarity matrix, sketch the dendrogram that results from hierarchically clustering these four observations using complete linkage. Be sure to indicate on the plot the height at which each fusion occurs, as well as the observations corresponding to each leaf in the dendrogram.
+
+*We will use Algorithm 10.2 to explain the different steps that lead to the dendrogram.*
+
+*Step 1. We already have
+\[\pmatrix{ &0.3 &0.4 &0.7 \cr 0.3 & &0.5 &0.8 \cr 0.4 &0.5 & & 0.45 \cr 0.7 &0.8 &0.45 & }.\]*
+
+*Step 2. $i = 4$ : We may see that 0.3 is the minimum dissimilarity, so we fuse observations 1 and 2 to form cluster (1,2) at hight 0.3. We now have the new dissimilarity matrix
+\[\pmatrix{ &0.5 &0.8 \cr 0.5 & &0.45 \cr 0.8 &0.45 & }.\]
+$i = 3$ : We now see that the minimum dissimilarity is 0.45, so we fuse observations 3 and 4 to form cluster (3,4) at height 0.45. We now have the new dissimilarity matrix
+\[\pmatrix{ &0.8 \cr 0.8 & }.\]
+$i = 4$ : It remains to fuse clusters (1,2) and (3,4) to form cluster ((1,2),(3,4)) at height 0.8.*
+
+```{r}
+d = as.dist(matrix(c(0, 0.3, 0.4, 0.7, 
+                     0.3, 0, 0.5, 0.8,
+                     0.4, 0.5, 0.0, 0.45,
+                     0.7, 0.8, 0.45, 0.0), nrow = 4))
+plot(hclust(d, method = "complete"))
+```
+
+(b) Repeat (a), this time using simple linkage clustering.
+
+*We will again use Algorithm 10.2 to explain the different steps that lead to the dendrogram.*
+
+*Step 1. We already have
+\[\pmatrix{ &0.3 &0.4 &0.7 \cr 0.3 & &0.5 &0.8 \cr 0.4 &0.5 & & 0.45 \cr 0.7 &0.8 &0.45 & }.\]*
+
+*Step 2. $i = 4$ : We may see that 0.3 is the minimum dissimilarity, so we fuse observations 1 and 2 to form cluster (1,2) at hight 0.3. We now have the new dissimilarity matrix
+\[\pmatrix{ &0.4 &0.7 \cr 0.4 & &0.45 \cr 0.7 &0.45 & }.\]
+$i = 3$ : We now see that the minimum dissimilarity is 0.4, so we fuse cluster (1,2) and observation 3 to form cluster ((1,2),3) at height 0.4. We now have the new dissimilarity matrix
+\[\pmatrix{ &0.45 \cr 0.45 & }.\]
+$i = 4$ : It remains to fuse clusters ((1,2),3) and observation 4 to form cluster (((1,2),3),4) at height 0.45.*
+
+```{r}
+plot(hclust(d, method = "single"))
+```
+
+(c) Suppose that we cut the dendrogram obtained in (a) such that two clusters result. Which observations are in each cluster ?
+
+*In this case, we have clusters (1,2) and (3,4).*
+
+(d) Suppose that we cut the dendrogram obtained in (b) such that two clusters result. Which observations are in each cluster ?
+
+*In this case, we have clusters ((1,2),3) and (4).*
+
+(e) It is mentioned in the chapter that at each fusion in the dendrogram, the position of the two clusters being fused can be swapped without changing the meaning of the dendrogram. Draw a dendrogram that is equivalent to the dendrogram in (a), for which two or more of the leaves are repositioned, but for which the meaning of the dendrogram is the same.
+
+```{r}
+plot(hclust(d, method = "complete"), labels = c(2,1,4,3))
+```
+
+**Q3.** In this problem, you will perform $K$-means clustering manually, with $K = 2$, on a small example with $n = 6$ observations and $p = 2$ features. The observations are as follows.
+\[\begin{array}{c|cc}
+\hline
+\mbox{Obs.} &X_1 &X_2 \cr
+\hline
+1 &1 &4 \cr
+2 &1 &3 \cr
+3 &0 &4 \cr
+4 &5 &1 \cr
+5 &6 &2 \cr
+6 &4 &0 \cr
+\hline
+\end{array}\]
+
+(a) Plot the observations.
+
+```{r}
+x <- cbind(c(1, 1, 0, 5, 6, 4), c(4, 3, 4, 1, 2, 0))
+plot(x[,1], x[,2])
+```
+
+(b) Randomly assign a cluster label to each observation. Report the cluster labels for each observation.
+
+```{r}
+set.seed(1)
+labels <- sample(2, nrow(x), replace = T)
+labels
+plot(x[, 1], x[, 2], col = (labels + 1), pch = 20, cex = 2)
+```
+
+(c) Compute the centroid for each cluster.
+
+*We can compute the centroid for the green cluster with
+\[\overline{x}_{11} = \frac{1}{3}(0 + 4 + 5) = 3\mbox{ and }\overline{x}_{12} = \frac{1}{3}(4 + 0 + 1) = \frac{5}{3}\]
+and for the red cluster
+\[\overline{x}_{21} = \frac{1}{3}(1 + 1 + 6) = \frac{8}{3}\mbox{ and }\overline{x}_{22} = \frac{1}{3}(2 + 4 + 3) = 3.\]*
+
+```{r}
+centroid1 <- c(mean(x[labels == 1, 1]), mean(x[labels == 1, 2]))
+centroid2 <- c(mean(x[labels == 2, 1]), mean(x[labels == 2, 2]))
+plot(x[,1], x[,2], col=(labels + 1), pch = 20, cex = 2)
+points(centroid1[1], centroid1[2], col = 2, pch = 4)
+points(centroid2[1], centroid2[2], col = 3, pch = 4)
+```
+
+(d) Assign each observation to the centroid to which it is closest, in terms of Euclidean distance. Report the cluster labels for each observation.
+
+```{r}
+labels <- c(1, 1, 1, 2, 2, 2)
+plot(x[, 1], x[, 2], col = (labels + 1), pch = 20, cex = 2)
+points(centroid1[1], centroid1[2], col = 2, pch = 4)
+points(centroid2[1], centroid2[2], col = 3, pch = 4)
+```
+
+(e) Repeat (c) and (d) until the answers obtained stop changing.
+
+*We can compute the centroid for the green cluster with
+\[\overline{x}_{11} = \frac{1}{3}(4 + 5 + 6) = 5\mbox{ and }\overline{x}_{12} = \frac{1}{3}(0 + 1 + 2) = 1\]
+and for the red cluster
+\[\overline{x}_{21} = \frac{1}{3}(0 + 1 + 1) = \frac{2}{3}\mbox{ and }\overline{x}_{22} = \frac{1}{3}(3 + 4 + 4) = \frac{11}{3}.\]*
+
+```{r}
+centroid1 <- c(mean(x[labels == 1, 1]), mean(x[labels == 1, 2]))
+centroid2 <- c(mean(x[labels == 2, 1]), mean(x[labels == 2, 2]))
+plot(x[,1], x[,2], col=(labels + 1), pch = 20, cex = 2)
+points(centroid1[1], centroid1[2], col = 2, pch = 4)
+points(centroid2[1], centroid2[2], col = 3, pch = 4)
+```
+
+*If we assign each observation to the centroid to which it is closest, nothing changes, so the algorithm is terminated at this step.*
+
+(f) In your plot from (a), color the observations according to the clusters labels obtained.
+
+```{r}
+plot(x[, 1], x[, 2], col=(labels + 1), pch = 20, cex = 2)
+```
+
+**Q4.** Suppose that for a particular data set, we perform hierarchical clustering using single linkage and using complete linkage. We obtain two dendrograms.
+
+(a) At a certain point on the single linkage dendrogram, the clusters $\{1,2,3\}$ and $\{4,5\}$ fuse. On the complete linkage dendrogram, the clusters $\{1,2,3\}$ and $\{4,5\}$ also fuse at a certain point. Which fusion will occur higher on the tree, or will they fuse at the same height, or is there not enough information to tell ?
+
+*There is not enough information to tell. For example, if $d(1,4) = 2$, $d(1,5) = 3$, $d(2,4) = 1$, $d(2,5) = 3$, $d(3,4) = 4$ and $d(3,5) = 1$, the single linkage dissimilarity between $\{1,2,3\}$ and $\{4,5\}$ would be equal to 1 and the complete linkage dissimilarity between $\{1,2,3\}$ and $\{4,5\}$ would be equal to 4. So, with single linkage, they would fuse at a height of 1, and with complete linkage, they would fuse at a height of 4. But, if all inter-observations distance are equal to 2, we would have that the single and complete linkage dissimilarities between $\{1,2,3\}$ and $\{4,5\}$ are equal to 2.*
+
+(b) At a certain point on the single linkage dendrogram, the clusters $\{5\}$ and $\{6\}$ fuse. On the complete linkage dendrogram, the clusters $\{5\}$ and $\{6\}$ also fuse at a certain point. Which fusion will occur higher on the tree, or will they fuse at the same height, or is there not enough information to tell ?
+
+*They would fuse at the same height. For example, if $d(5,6) = 2$, the single and complete linkage dissimilarities between $\{5\}$ and $\{6\}$ would be equal to 2. So, they would fuse at a height of 2 for single and complete linkage.*
+
+**Q5.** In words, describe the results that you would expect if you performed $K$-means clustering of the eight shoppers in Figure 10.14, on the basis of their sock and computer purchases, with $K = 2$. Give three answers, one for each of the variable scalings displayed. Explain.
+
+*If we take into consideration the unscaled variables, the number of socks plays a larger role than the number of computers, so we have the clusters $\{1,2,7,8\}$ (least socks and computer) and $\{3,4,5,6\}$ (more socks and computer).*
+
+```{r}
+socks <- c(8, 11, 7, 6, 5, 6, 7, 8)
+computers <- c(0, 0, 0, 0, 1, 1, 1, 1)
+x <- cbind(socks, computers)
+labels <- c(1, 1, 2, 2, 2, 2, 1, 1)
+plot(x[, 1], x[, 2], col=(labels + 1), pch = 20, cex = 2, asp = 1)
+```
+
+*If we take into consideration the scaled variables, the number of computers plays a much larger role than the number of socks, so we have the clusters $\{5,6,7,8\}$ (purchased computer) and $\{1,2,3,4\}$ (no computer purchased).*
+
+```{r}
+x <- cbind(scale(socks, center = FALSE), scale(computers, center = FALSE))
+sd(computers)
+labels <- c(1, 1, 2, 2, 2, 2, 1, 1)
+plot(x[, 1], x[, 2], col=(labels + 1), pch = 20, cex = 2, asp = 1)
+```
+
+*If we take into consideration the variables measured by the number of dollars spent, here also the number of computers plays a much larger role than the number of socks, so we have the clusters $\{5,6,7,8\}$ (purchased computer) and $\{1,2,3,4\}$ (no computer purchased).*
+
+**Q6.** A researcher collects expression measurements for 1000 genes in 100 tissue samples. The data can be written as a 1000x1000 matrix, which we call $X$, in which each row represents a gene and each column a tissue sample. Each tissue sample was processed on a different day, and the columns of $X$ are ordered so that the samples that were processed earliest are on the left, and the samples that were processed later are on the right. The tissue samples belong to two groups : control (C) and treatment (T). The C and T samples were processed in a random order across the days. The researcher wishes to determine whether each gene's expression measurements differ between the treatment and control groups.
+
+As a pre-analysis (before comparing T versus C), the researcher performs a principal component analysis of the data, and finds that the first principal component (a vector of length 100) has a strong linear trend from left to right, and explains 10% of the variation. The researcher now remembers that each patient sample was run on one of two machines, A and B, and machine A was used more often in the earlier times while B was used more often later. The researcher has a record of which sample was run on which machine.
+
+(a) Explain what it means that the first principal component "explains 10% of the variation".
+
+*The first principal component “explains 10% of the variation” means 90% of the information in the gene data set is lost by projecting the tissue sample observations onto the first principal component. Another way of explaining it is 90% of the variance in the data is not contained in the first principal component.*
+
+(b) The researcher decides to replace the $(i,j)$th element of $X$ with
+\[x_{ij} - z_{i1}\phi_{j1}\]
+where $z_{i1}$ is the $i$th score, and $\phi_{j1}$ is the $j$th loading, for the first principal component. He will then perform a two-sample t-test on each gene in this new data set in order to determine whether its expression differs between the two conditions. Critique this idea, and suggest a better approach.
+
+*Given the flaw shown in pre-analysis of a time-wise linear trend amongst the tissue samples’ first principal component, I would advise the researcher to include the machine used (A vs B) as a feature of the data set. This should enhance the PVE of the first principal component before applying the two-sample t-test.*
+
+(c) Design and run a small simulation experiment to demonstrate the superiority of your idea.
+
+```{r}
+set.seed(1)
+Control <- matrix(rnorm(50 * 1000), ncol = 50)
+Treatment <- matrix(rnorm(50 * 1000), ncol = 50)
+X <- cbind(Control, Treatment)
+X[1, ] <- seq(-18, 18 - .36, .36) # linear trend in one dimension
+pr.out <- prcomp(scale(X))
+summary(pr.out)$importance[, 1]
+```
+
+*We have 9.911% variance explained by the first principal component. Now, adding in A vs B via 10 vs 0 encoding.*
+
+```{r}
+X <- rbind(X, c(rep(10, 50), rep(0, 50)))
+pr.out <- prcomp(scale(X))
+summary(pr.out)$importance[, 1]
+```
+
+*Now we have 11.54% variance explained by the first principal component. That's an improvement of 1.629%.*
+
+## Applied
+
+**Q7.** In the chapter, we mentioned the use of correlation-based distance and Euclidean distance as dissimilarity measures for hierarchical clustering. It turns out that these two measures are almost equivalent : if each observation has been centered to have mean zero and standard deviation one, and if we let $r_{ij}$ denote the correlation between the $i$th and $j$th observations, then the quantity $1 - r_{ij}$ is proportional to the squared Euclidean distance between the $i$th and $j$th observations. On the "USArrests" data, show that this proportionality holds.
+
+```{r}
+library(ISLR)
+set.seed(1)
+dsc <- scale(USArrests)
+d1 <- dist(dsc)^2
+d2 <- as.dist(1 - cor(t(dsc)))
+summary(d2 / d1)
+```
+
+**Q8.** In Section 10.2.3, a formula for calculating PVE was given in Equation 10.8. We also saw that the PVE can be obtained using the "sdev" output of the "prcomp()" function. On the "USArrests" data, calculate PVE in two ways :
+
+(a) Using the "sdev" output of the "prcomp()" function, as was done in Section 10.2.3.
+
+```{r}
+pr.out <- prcomp(USArrests, scale = TRUE)
+pr.var <- pr.out$sdev^2
+pve <- pr.var / sum(pr.var)
+sum(pr.var)
+pve
+```
+
+(b) By applying Equation 10.8 directly. That is, use the "prcomp()" function to compute the principal component loadings. Then, use those loadings in Equation 10.8 to obtain the PVE.
+
+```{r}
+loadings <- pr.out$rotation
+USArrests2 <- scale(USArrests)
+sumvar <- sum(apply(as.matrix(USArrests2)^2, 2, sum))
+apply((as.matrix(USArrests2) %*% loadings)^2, 2, sum) / sumvar
+```
+
+**Q9.** Consider the "USArrests" data. We will now perform hierarchical clustering on the states.
+
+(a) Using hierarchical clustering with complete linkage and Euclidean distance, cluster the states.
+
+```{r}
+set.seed(2)
+hc.complete <- hclust(dist(USArrests), method = "complete")
+plot(hc.complete)
+```
+
+(b) Cut the dendrogram at a height that results in three distinct clusters. Which states belong to which clusters ?
+
+```{r}
+cutree(hc.complete, 3)
+```
+
+(c) Hierachically cluster the states using complete linkage and Euclidean distance, after scaling the variables to have standard deviation one.
+
+```{r}
+sd.data <- scale(USArrests)
+hc.complete.sd <- hclust(dist(sd.data), method = "complete")
+plot(hc.complete.sd)
+```
+
+(d) What effect does scaling the variables have on the hierarchical clustering obtained ? In your opinion, should the variables be scaled before the inter-observation dissimilarities are computed ? Provide a justification for your answer.
+
+```{r}
+cutree(hc.complete.sd, 3)
+table(cutree(hc.complete, 3), cutree(hc.complete.sd, 3))
+```
+
+*Scaling the variables affect the clusters obtained although the trees are somewhat similar. The variables should be scaled beforehand because the data measures have different units.*
+
+**Q10.** In this problem, you will generate simulated data, and then perform PCA and $K$-means clustering on the data.
+
+(a) Generate a simulated data set with 20 observations in each of three classes (i.e. 60 observations total), and 50 variables.
+
+```{r}
+set.seed(2)
+x <- matrix(rnorm(20 * 3 * 50, mean = 0, sd = 0.001), ncol = 50)
+x[1:20, 2] <- 1
+x[21:40, 1] <- 2
+x[21:40, 2] <- 2
+x[41:60, 1] <- 1
+true.labels <- c(rep(1, 20), rep(2, 20), rep(3, 20))
+```
+
+(b) Perform PCA on the 60 observations and plot the first two principal component score vectors. Use a different color to indicate the observations in each of the three classes. If the three classes appear separated in this plot, then continue on to part (c). If not, the return to part (a) and modify the simulation so that there is greater separation between the three classes. Do not continue to part (c) until the three classes show at least some separation in the first two principal component score vectors.
+
+```{r}
+pr.out <- prcomp(x)
+plot(pr.out$x[, 1:2], col = 1:3, xlab = "Z1", ylab = "Z2", pch = 19)
+```
+
+(c) Perform $K$-means clustering of the observations with $K = 3$. How well do the clusters that you obtained in $K$-means clustering compare to the true class labels ?
+
+```{r}
+km.out <- kmeans(x, 3, nstart = 20)
+table(true.labels, km.out$cluster)
+```
+
+*The observations are perfectly clustered.*
+
+(d) Perform $K$-means clustering with $K = 2$. Describe your results.
+
+```{r}
+km.out <- kmeans(x, 2, nstart = 20)
+table(true.labels, km.out$cluster)
+```
+
+*All observations of one of the three clusters is now absorbed in one of the two clusters.*
+
+(e) Now perform $K$-means clustering with $K = 4$, and describe your results.
+
+```{r}
+km.out <- kmeans(x, 4, nstart = 20)
+table(true.labels, km.out$cluster)
+```
+
+*The first cluster is splitted into two clusters.*
+
+(f) Now perform $K$-means clustering with $K = 3$ on the first two principal component score vectors, rather than on the raw data. That is, perform $K$-means clustering on the 60x2 matrix of which the first column is the first principal component score vector, and the second column is the second principal component score vector. Comment on the results.
+
+```{r}
+km.out <- kmeans(pr.out$x[, 1:2], 3, nstart = 20)
+table(true.labels, km.out$cluster)
+```
+
+*All observations are perfectly clustered once again.*
+
+(g) Using the "scale()" function, perform $K$-means clustering with $K = 3$ on the data after scaling each variable to have standard deviation one. How do these results compare to those obtained in (b) ? Explain.
+
+```{r}
+km.out <- kmeans(scale(x), 3, nstart = 20)
+table(true.labels, km.out$cluster)
+```
+
+*We may see that we have worse results than with unscaled data, as scaling affects the distance between the observations.*
+
+**Q11.** On the book website, there is a gene expression data set that consists of 40 tissue samples with measurements on 1000 genes. The first 20 samples are from healthy patients, while the second 20 are from a diseased group.
+
+(a) Load the data using "read.csv()". You will need to select "header = F".
+
+```{r}
+genes <- read.csv("Ch10Ex11.csv", header = FALSE)
+```
+
+(b) Apply hierarchical clustering to the samples using correlation-based distance, and plot the dendrogram. Do the genes separate the samples into two groups ? Do your results depend on the type of linkage used ?
+
+```{r}
+hc.complete <- hclust(as.dist(1 - cor(genes)), method = "complete")
+plot(hc.complete)
+hc.single <- hclust(as.dist(1 - cor(genes)), method = "single")
+plot(hc.single)
+hc.average <- hclust(as.dist(1 - cor(genes)), method = "average")
+plot(hc.average)
+```
+
+*The results are pretty different when using different linkage methods as we obtain two clusters for complete and single linkages or three clusters for average cluster.*
+
+(c) Your collaborator wants to know which genes differ the most across the two groups. Suggest a way to answer this question, and apply it here.
+
+*We may use PCA to see which genes differ the most. We will examine the absolute values of the total loadings for each gene as it characterizes the weight of each gene.*
+
+```{r}
+pr.out <- prcomp(t(genes))
+head(pr.out$rotation)
+total.load <- apply(pr.out$rotation, 1, sum)
+index <- order(abs(total.load), decreasing = TRUE)
+index[1:10]
+```
+
+*These are the 10 most different genes across the two groups.*
